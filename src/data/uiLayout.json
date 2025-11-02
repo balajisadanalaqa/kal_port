@@ -1,0 +1,59 @@
+{
+  "theme": {
+    "fonts": {
+      "headings": {
+        "family": "Poppins",
+        "weight": "600"
+      },
+      "body": {
+        "family": "Raleway",
+        "weight": "400"
+      }
+    },
+    "colors": {
+      "primary": "#FF9C1A",
+      "secondary": "#EC1B09",
+      "background": "#F2F5F9",
+      "text": "#1A1A1A",
+      "gradients": {
+        "hero": "linear-gradient(135deg, #FF9C1A 0%, #EC1B09 100%)",
+        "button": "linear-gradient(90deg, #FF9C1A 0%, #EC1B09 100%)",
+        "card": "linear-gradient(145deg, #F2F5F9 0%, #FF9C1A 100%)"
+      }
+    },
+    "components": {
+      "button": {
+        "background": "linear-gradient(90deg, #FF9C1A 0%, #EC1B09 100%)",
+        "color": "#ffffff",
+        "fontFamily": "Raleway",
+        "borderRadius": "8px",
+        "padding": "12px 24px",
+        "border": "none",
+        "boxShadow": "0 4px 8px rgba(0, 0, 0, 0.1)"
+      },
+      "header": {
+        "fontFamily": "Poppins",
+        "fontWeight": "600",
+        "background": "#F2F5F9",
+        "color": "#1A1A1A"
+      },
+      "card": {
+        "background": "#ffffff",
+        "borderRadius": "12px",
+        "boxShadow": "0 8px 24px rgba(0, 0, 0, 0.08)",
+        "padding": "20px",
+        "gradientOverlay": "linear-gradient(145deg, #F2F5F9 0%, #FF9C1A 100%)"
+      }
+    },
+    "layout": {
+      "spacing": {
+        "sectionPadding": "60px 20px",
+        "elementGap": "20px"
+      },
+      "container": {
+        "maxWidth": "1200px",
+        "padding": "0 20px"
+      }
+    }
+  }
+}
