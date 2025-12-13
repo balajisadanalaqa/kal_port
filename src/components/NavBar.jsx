@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { summary } from "../data/summaryData";
 import ThemeSwitcher from "./ThemeSwitcher";
 import { FaLinkedin, FaInstagram, FaEnvelope, FaPhone } from "react-icons/fa";
@@ -15,6 +15,8 @@ const NavBar = () => {
   const [activeSection, setActiveSection] = useState("#home");
 
   useEffect(() => {
+    let ticking = false;
+
     const handleScroll = () => {
       const scrollPosition = window.scrollY;
       const sectionOffsets = navItems.map(item => {
@@ -23,20 +25,34 @@ const NavBar = () => {
       });
       let current = "#home";
       for (let i = 0; i < sectionOffsets.length; i++) {
-        if (scrollPosition + 80 >= sectionOffsets[i]) {
+        if (scrollPosition + 120 >= sectionOffsets[i]) {
           current = navItems[i].href;
         }
       }
       setActiveSection(current);
     };
-    window.addEventListener("scroll", handleScroll);
-    // Expose setActiveSection globally for cross-component updates
+
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          handleScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    handleScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
     window.setActiveSection = setActiveSection;
+
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("scroll", onScroll);
       delete window.setActiveSection;
     };
   }, []);
+
+
 
   const handleNavClick = () => {
     // No-op, only used to prevent default or for future use, it caused glitch as underline goes to the navitem and again back to
@@ -44,20 +60,20 @@ const NavBar = () => {
   };
 
   return (
-    <nav
-      className={`w-full fixed top-0 z-50 transition-all duration-300 solid-glass-nav`}
-      style={{
-        backdropFilter: 'blur(16px)',
-        WebkitBackdropFilter: 'blur(16px)'
-      }}
-    >
-      <div className="max-w-8xl mx-auto px-4">
-        <div className="flex items-center justify-between h-14">
+          <nav
+          className={`fixed top-0 z-50 w-full hidden md:block`}
+        >      <div
+        className="solid-glass-nav backdrop-blur-xl backdrop-saturate-150"
+        style={{
+          WebkitBackdropFilter: 'blur(16px)'
+        }}
+      >
+        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6">
           <div className="lexend-giga-nav-bold  font-bold text-xl gradient-text neon-text align-left">
             {summary.short_name}
           </div>
 
-          <ul className="hidden md:flex gap-8 text-text lexend-giga-nav font-medium">
+          <ul className="flex gap-8 font-medium text-text lexend-giga-nav">
             {navItems.map((item) => (
               <li key={item.href}>
                 <a
@@ -75,7 +91,7 @@ const NavBar = () => {
           </ul>
 
           {/* Theme Switcher and Crypto Status */}
-          <div className="hidden lg:flex items-center gap-4">
+          <div className="flex items-center gap-4">
             <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
               <div className="w-8 h-8 bg-gradient-secondary rounded-full flex items-center justify-center mx-auto m-1 neon-glow">
                 <FaLinkedin className="w-4 h-4 text-background" />

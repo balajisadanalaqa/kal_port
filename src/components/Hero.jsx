@@ -1,192 +1,154 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { summary } from "../data/summaryData";
 import { patientsData } from "../data/patientsData";
 import { education } from "../data/educationData";
 import PatientCaseCarousel from "./PatientCaseCarousel";
 import PatientDetailsModal from "./PatientDetailsModal";
 
+const getCardMetrics = () => {
+  if (typeof window === "undefined") {
+    return { cardWidth: 320, gap: 12 };
+  }
+
+  if (window.innerWidth < 640) {
+    return { cardWidth: window.innerWidth * 0.85, gap: 12 };
+  }
+
+  if (window.innerWidth < 768) {
+    return { cardWidth: 320, gap: 14 };
+  }
+
+  if (window.innerWidth < 1024) {
+    return { cardWidth: 340, gap: 16 };
+  }
+
+  return { cardWidth: 380, gap: 20 };
+};
+
 const Hero = () => {
   const scrollContainerRef = useRef(null);
-  const [scrollDirection, setScrollDirection] = useState('left');
-  const [currentIndex, setCurrentIndex] = useState(0);
+  // Removed scroll direction functionality - now only scrolls left automatically
   const [isHovered, setIsHovered] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState(null);
 
   // Get highest education
   const highestEducation = education[0]; // DPT is the highest degree
 
-  // Auto-scroll effect with pause between patient cases
-  useEffect(() => {
-    const scrollContainer = scrollContainerRef.current;
-    if (!scrollContainer) return;
 
-    let timeoutId;
-    const cardWidth = window.innerWidth < 768 ? 288 : window.innerWidth < 1024 ? 384 : 420; // Responsive card width
-    const gap = window.innerWidth < 768 ? 16 : 24; // Responsive gap
-
-    const scrollToNext = () => {
-      // Don't scroll if hovering over center image
-      if (isHovered) {
-        timeoutId = setTimeout(scrollToNext, 500); // Check again in 500ms
-        return;
-      }
-
-      let nextIndex;
-      if (scrollDirection === 'left') {
-        nextIndex = (currentIndex + 1) % patientsData.length;
-      } else {
-        nextIndex = currentIndex === 0 ? patientsData.length - 1 : currentIndex - 1;
-      }
-
-      setCurrentIndex(nextIndex);
-      const scrollPosition = nextIndex * (cardWidth + gap);
-      scrollContainer.scrollTo({
-        left: scrollPosition,
-        behavior: 'smooth'
-      });
-
-      // Schedule next scroll after 10 seconds
-      timeoutId = setTimeout(scrollToNext, 10000);
-    }
-
-    // Start the scrolling 60 secs
-    timeoutId = setTimeout(scrollToNext, 60000);
-
-    return () => {
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
-    };
-  }, [scrollDirection, currentIndex, isHovered]);
-
-  const handleScrollLeft = () => {
-    const scrollContainer = scrollContainerRef.current;
-    if (!scrollContainer) return;
-
-    const cardWidth = window.innerWidth < 768 ? 288 : window.innerWidth < 1024 ? 384 : 420;
-    const gap = window.innerWidth < 768 ? 16 : 24;
-    const newIndex = currentIndex === 0 ? patientsData.length - 1 : currentIndex - 1;
-    setCurrentIndex(newIndex);
-
-    const scrollPosition = newIndex * (cardWidth + gap);
-    scrollContainer.scrollTo({
-      left: scrollPosition,
-      behavior: 'smooth'
-    });
-  };
-
-  const handleScrollRight = () => {
-    const scrollContainer = scrollContainerRef.current;
-    if (!scrollContainer) return;
-
-    const cardWidth = window.innerWidth < 768 ? 288 : window.innerWidth < 1024 ? 384 : 420;
-    const gap = window.innerWidth < 768 ? 16 : 24;
-    const newIndex = (currentIndex + 1) % patientsData.length;
-    setCurrentIndex(newIndex);
-
-    const scrollPosition = newIndex * (cardWidth + gap);
-    scrollContainer.scrollTo({
-      left: scrollPosition,
-      behavior: 'smooth'
-    });
-  };
-
-  const toggleScrollDirection = () => {
-    setScrollDirection(prev => prev === 'left' ? 'right' : 'left');
-  };
 
   // Function to check if a card is the center/fully displayed one
   const isCenterCard = (index) => {
-    return index === currentIndex;
+    if (typeof window !== 'undefined' && scrollContainerRef.current) {
+      const { cardWidth, gap } = getCardMetrics();
+      const scrollPosition = scrollContainerRef.current.scrollLeft;
+      const cardPosition = index * (cardWidth + gap);
+      // Check if the card is roughly in the center of the visible area
+      const containerWidth = scrollContainerRef.current.clientWidth;
+      const tolerance = cardWidth * 0.6; // Increased tolerance for better detection
+      return Math.abs(cardPosition - scrollPosition) < tolerance;
+    }
+    return false;
   };
 
   const handleViewPatientDetails = (patient) => {
     setSelectedPatient(patient);
   };
 
+  const goToNextPatient = () => {
+    if (!selectedPatient) return;
+
+    const currentIndex = patientsData.findIndex(p => p.id === selectedPatient.id);
+    const nextIndex = (currentIndex + 1) % patientsData.length;
+    setSelectedPatient(patientsData[nextIndex]);
+  };
+
+  const goToPrevPatient = () => {
+    if (!selectedPatient) return;
+
+    const currentIndex = patientsData.findIndex(p => p.id === selectedPatient.id);
+    const prevIndex = currentIndex === 0 ? patientsData.length - 1 : currentIndex - 1;
+    setSelectedPatient(patientsData[prevIndex]);
+  };
+
   const handleCloseModal = () => {
     setSelectedPatient(null);
   };
 
+
   return (
-    <section className="relative w-full min-h-[70vh] bg-background">
-      {/* Animated Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-background via-surface to-background">
-        <div className="absolute top-20 left-20 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-pulse-glow"></div>
-        <div className="absolute bottom-20 right-20 w-96 h-96 bg-secondary/10 rounded-full blur-3xl animate-pulse-glow" style={{animationDelay: '1s'}}></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-accent/5 rounded-full blur-3xl animate-pulse-glow" style={{animationDelay: '2s'}}></div>
+    <section className="relative w-full overflow-hidden rounded-3xl bg-background md:pt-6 md:mt-4">
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute top-10 left-4 h-48 w-48 rounded-full bg-primary/10 blur-3xl animate-pulse-glow" />
+        <div className="absolute bottom-6 right-4 h-56 w-56 rounded-full bg-secondary/10 blur-3xl animate-pulse-glow" style={{ animationDelay: "1s" }} />
+        <div className="absolute left-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent/5 blur-3xl animate-pulse-glow" style={{ animationDelay: "2s" }} />
       </div>
 
-      <div className="relative z-10 grid grid-cols-1 md:grid-cols-14 items-start justify-center min-h-[70vh] p-4 md:p-1 gap-2 md:gap-2">
-        {/* Text Content - Takes up full width on mobile, 2/5 on desktop */}
-        <div className="col-span-1 md:col-span-4 flex flex-col items-center md:items-start md:pl-8 md:pt-10 lg:pl-12 text-center md:text-left space-y-3 mt-10 md:mt-14 order-2 md:order-1 relative  p-6">
-
-          <div className="flex items-center gap-3 mb-2 relative z-10">
+<div className="relative z-10 flex w-full flex-col gap-3 px-3 py-4 sm:px-4 md:min-h-[360px] lg:min-h-[420px] lg:flex-row lg:items-center lg:gap-6 lg:px-5 xl:px-6">
+        {/* Profile summary column (left) */}
+<div className="flex w-full min-w-0 flex-col items-center gap-3 text-center sm:gap-4 lg:max-w-[300px] lg:flex-[0.28] lg:items-start lg:text-left">
+          <div className="flex w-full flex-col items-center gap-2.5 lg:items-start">
             <img
               src="https://i.pravatar.cc/150?u=drchelli"
               alt={summary.name}
-              className="w-14 h-14 md:w-16 md:h-16 rounded-full border-3 border-primary/20 object-cover shadow-lg"
+              className="h-14 w-14 rounded-full border-3 border-primary/20 object-cover shadow-lg sm:h-16 sm:w-16"
             />
-            <h1 className="text-xl md:text-2xl font-heading font-bold gradient-text neon-text">
+            <h1 className="font-heading text-lg font-bold gradient-text neon-text sm:text-xl lg:text-lg">
               {summary.name}
             </h1>
           </div>
 
-          <p className="text-sm md:text-base max-w-xs lg:max-w-sm text-text-secondary font-body leading-relaxed relative z-10">
+          <p className="mx-auto max-w-xl text-[10px] leading-relaxed text-text-secondary sm:text-xs">
             {summary.bio}
           </p>
 
-          {/* Education Highlight */}
-          <div className="flex items-center gap-2 mt-2 relative z-10">
-            <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-            <div className="w-12 h-12 bg-gradient-primary rounded-full flex items-center justify-center neon-glow">
-              <svg className="w-6 h-6 text-background" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838l-2.727 1.17 1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z" />
-              </svg>
-            </div>
-            <span className="text-xs md:text-sm text-primary/80 font-bold">
-              {highestEducation.degree} • {highestEducation.institute}
+          <div className="flex flex-col items-center gap-1.5 text-[10px] font-semibold text-primary/85 lg:items-start">
+            <span className="flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-0.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+              {highestEducation.degree}
             </span>
-          </div>
-          <div className="flex items-center gap-2 mt-2 relative z-10">
-            <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-            <div className="w-12 h-12 bg-gradient-primary rounded-full flex items-center justify-center neon-glow">
-              <svg className="w-6 h-6 text-background" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838l-2.727 1.17 1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z" />
-              </svg>
-            </div>
-            <span className="text-xs md:text-sm text-primary/80 font-bold">
-              {highestEducation.degree} • {highestEducation.institute}
+            <span className="flex items-center gap-1.5 rounded-full bg-secondary/10 px-2.5 py-0.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-secondary animate-pulse" />
+              {highestEducation.institute}
             </span>
+            {education.length > 1 && (
+              <span className="flex items-center gap-1.5 rounded-full bg-accent/10 px-2.5 py-0.5 text-[9px]">
+                <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
+                +{education.length - 1} more qualification(s)
+              </span>
+            )}
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-3 mt-3 relative z-10">
+          <div className="flex w-full flex-col gap-1.5 sm:flex-row sm:justify-center lg:flex-col lg:items-start">
             <button
-              className="glass-button pulse-glow text-sm px-4 py-2"
+              className="glass-button pulse-glow px-3 py-1 text-[10px] lg:w-full"
               onClick={() => {
                 window.open(
-                  'https://mail.google.com/mail/?view=cm&fs=1&to=example@gmail.com&su=Subject-%20Enquiry%20about%20Physiotherapy%20Services%20and%20Appointments&body=Content-%20I%20would%20like%20to%20contact%20you%20regarding%20your%20physiotherapy%20services.',
-                  '_blank'
+                  "https://mail.google.com/mail/?view=cm&fs=1&to=example@gmail.com&su=Subject-%20Enquiry%20about%20Physiotherapy%20Services%20and%20Appointments&body=Content-%20I%20would%20like%20to%20contact%20you%20regarding%20your%20physiotherapy%20services.",
+                  "_blank"
                 );
-                const expSection = document.querySelector('#experience');
+                const expSection = document.querySelector("#experience");
                 if (expSection) {
-                  expSection.scrollIntoView({ behavior: 'smooth' });
+                  expSection.scrollIntoView({ behavior: "smooth" });
                 }
                 if (window.setActiveSection) {
-                  window.setActiveSection('#experience');
+                  window.setActiveSection("#experience");
                 }
               }}
             >
               <span className="flex items-center justify-center gap-2">
-                <svg className="w-4 h-4 transform rotate-180" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.293l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clipRule="evenodd" />
+                <svg className="h-3.5 w-3.5 -scale-x-100" fill="currentColor" viewBox="0 0 20 20">
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.293l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z"
+                    clipRule="evenodd"
+                  />
                 </svg>
                 Know More
               </span>
             </button>
-            <button className="btn-success text-sm px-4 py-2">
+            <button className="btn-success px-4 py-1.5 text-[10px] lg:w-full">
               <span className="flex items-center justify-center gap-2">
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
                   <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
                 </svg>
@@ -196,67 +158,24 @@ const Hero = () => {
           </div>
         </div>
 
-        {/* Patient Cases Gallery - Takes up full width on mobile, 3/5 on desktop */}
-        <div className="col-span-1 md:col-span-10 relative w-full h-[100vh] md:h-[80vh] flex flex-col justify-start py-4 md:py-4 order-2">
-          {/* Direction Toggle Control - Hidden on mobile */}
-          <div className="absolute top-4 right-4 z-20 hidden md:block">
-            <button
-              onClick={toggleScrollDirection}
-              className="glass-nav-btn text-xs px-3 py-2 rounded-lg"
-              title={`Scrolling ${scrollDirection === 'left' ? 'Left' : 'Right'}`}
-            >
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z" clipRule="evenodd" />
-              </svg>
-            </button>
-          </div>
-
-          {/* Left Navigation Button - Hidden on mobile */}
-          <button
-            onClick={handleScrollLeft}
-            className="absolute left-2 top-1/2 transform -translate-y-1/2 z-20 glass-nav-btn-rect hidden md:flex"
-            title="Scroll Left"
-          >
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
-            </svg>
-          </button>
-
-          {/* Right Navigation Button - Hidden on mobile */}
-          <button
-            onClick={handleScrollRight}
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 z-20 glass-nav-btn-rect hidden md:flex"
-            title="Scroll Right"
-          >
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-            </svg>
-          </button>
-
-          {/* Scrolling Container */}
+        {/* Patient gallery column (right) */}
+        <div className="relative flex w-full min-w-0 flex-1 flex-col overflow-hidden rounded-3xl border border-border bg-surface/90 shadow-xl min-h-[320px] max-h-[340px] sm:min-h-[380px] sm:max-h-[400px] md:min-h-[440px] md:max-h-[460px] lg:flex-1 lg:min-h-[520px] lg:max-h-[540px] lg:self-stretch">
           <div
             ref={scrollContainerRef}
-            className="flex gap-2 md:gap-1 h-full overflow-x-scroll overflow-y-hidden"
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            className="scrollbar-hide flex h-full min-w-0 gap-1.5 overflow-x-auto overflow-y-hidden overscroll-x-contain px-1 py-1.5 snap-x snap-mandatory sm:px-1.5 sm:py-2 md:gap-2 md:px-2"
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
             {patientsData.map((patient, index) => (
               <div
                 key={patient.id}
-                className={`flex-shrink-0 w-100 md:w-140 h-full mx-1 md:mx-1 ${isCenterCard(index) ? 'center-card' : ''}`}
-                onMouseEnter={() => {
-                  if (isCenterCard(index)) {
-                    setIsHovered(true);
-                  }
-                }}
-                onMouseLeave={() => {
-                  if (isCenterCard(index)) {
-                    setIsHovered(false);
-                  }
-                }}
+                className={`snap-center flex-shrink-0 basis-[85vw] max-w-full sm:basis-[320px] md:basis-[340px] lg:basis-[380px] xl:basis-[420px] ${isCenterCard(index) ? "center-card" : ""}`}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
               >
                 <PatientCaseCarousel
                   patient={patient}
                   onViewDetails={handleViewPatientDetails}
+                  isCenterCard={isCenterCard(index)}
                 />
               </div>
             ))}
@@ -264,11 +183,12 @@ const Hero = () => {
         </div>
       </div>
 
-      {/* Patient Details Modal */}
       {selectedPatient && (
         <PatientDetailsModal
           patient={selectedPatient}
           onClose={handleCloseModal}
+          onNextPatient={goToNextPatient}
+          onPrevPatient={goToPrevPatient}
         />
       )}
     </section>

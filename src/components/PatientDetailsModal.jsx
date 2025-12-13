@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const PatientDetailsModal = ({ patient, onClose }) => {
+const PatientDetailsModal = ({ patient, onClose, onNextPatient, onPrevPatient }) => {
   const [selectedMedia, setSelectedMedia] = useState(null);
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
 
@@ -40,17 +40,39 @@ const PatientDetailsModal = ({ patient, onClose }) => {
             className="p-6 text-white relative"
             style={{ backgroundColor: patient.boxColor }}
           >
-            <button
-              onClick={onClose}
-              className="absolute top-4 right-4 glass-nav-btn-rect"
-            >
-              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-              </svg>
-            </button>
+            <div className="flex items-center gap-2 absolute top-4 right-4">
+              {onPrevPatient && (
+                <button
+                  onClick={onPrevPatient}
+                  className="glass-nav-btn-rect"
+                >
+                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                </button>
+              )}
+              <button
+                onClick={onClose}
+                className="glass-nav-btn-rect"
+              >
+                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              </button>
+              {onNextPatient && (
+                <button
+                  onClick={onNextPatient}
+                  className="glass-nav-btn-rect"
+                >
+                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                  </svg>
+                </button>
+              )}
+            </div>
 
-            <h2 className="text-2xl font-heading font-bold mb-2">{patient.patientName}</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
+            <h2 className="text-lg sm:text-xl md:text-2xl font-heading font-bold mb-1 sm:mb-2">{patient.patientName}</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4 text-[10px] sm:text-sm">
               <div>
                 <span className="font-semibold">Condition:</span>
                 <p>{patient.condition}</p>
@@ -71,12 +93,12 @@ const PatientDetailsModal = ({ patient, onClose }) => {
           </div>
 
           {/* Media Grid */}
-          <div className="p-6 overflow-y-auto max-h-[60vh]">
-            <h3 className="text-xl font-heading font-bold mb-4 text-text-primary">
+          <div className="p-3 sm:p-6 overflow-y-auto max-h-[60vh]">
+            <h3 className="text-lg sm:text-xl font-heading font-bold mb-2 sm:mb-4 text-text-primary">
               Treatment Progress & Exercises
             </h3>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 gap-2 sm:gap-4">
               {allMedia.map((media, index) => (
                 <div
                   key={`${media.id}-${index}`}
@@ -86,9 +108,12 @@ const PatientDetailsModal = ({ patient, onClose }) => {
                   {media.url.includes('.mp4') ? (
                     <video
                       src={media.url}
-                      className="w-full h-48 object-cover"
+                      className="w-full h-24 sm:h-48 object-cover"
                       muted
                       loop
+                      onError={(e) => {
+                        console.error('Video failed to load:', media.url);
+                      }}
                       onMouseEnter={(e) => e.target.play()}
                       onMouseLeave={(e) => e.target.pause()}
                     />
@@ -96,14 +121,18 @@ const PatientDetailsModal = ({ patient, onClose }) => {
                     <img
                       src={media.url}
                       alt={media.description}
-                      className="w-full h-48 object-cover"
+                      className="w-full h-24 sm:h-48 object-cover"
+                      onError={(e) => {
+                        e.target.src = 'https://via.placeholder.com/800x600/333333/FFFFFF?text=Image+Not+Found';
+                        console.error('Image failed to load:', media.url);
+                      }}
                     />
                   )}
 
                   {/* Video indicator */}
                   {media.url.includes('.mp4') && (
-                    <div className="absolute top-2 right-2 bg-black/70 text-white p-1 rounded-full">
-                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <div className="absolute top-1 sm:top-2 right-1 sm:right-2 bg-black/70 text-white p-0.5 sm:p-1 rounded-full">
+                      <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
                       </svg>
                     </div>
@@ -111,7 +140,7 @@ const PatientDetailsModal = ({ patient, onClose }) => {
 
                   {/* Description overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <div className="absolute bottom-0 left-0 right-0 p-3 text-white text-sm">
+                    <div className="absolute bottom-0 left-0 right-0 p-1.5 sm:p-3 text-white text-[8px] sm:text-sm">
                       <p className="line-clamp-3">{media.description}</p>
                     </div>
                   </div>
@@ -152,12 +181,19 @@ const PatientDetailsModal = ({ patient, onClose }) => {
                     className="w-full h-full object-contain"
                     controls
                     autoPlay
+                    onError={(e) => {
+                      console.error('Video failed to load in lightbox:', selectedMedia.url);
+                    }}
                   />
                 ) : (
                   <img
                     src={selectedMedia.url}
                     alt={selectedMedia.description}
                     className="w-full h-full object-contain"
+                    onError={(e) => {
+                      e.target.src = 'https://via.placeholder.com/800x600/333333/FFFFFF?text=Image+Not+Found';
+                      console.error('Image failed to load in lightbox:', selectedMedia.url);
+                    }}
                   />
                 )}
               </div>

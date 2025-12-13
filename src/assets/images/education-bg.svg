@@ -1,0 +1,6 @@
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="1920" height="1080" fill="#1A202C"/>
+<circle cx="960" cy="540" r="400" fill="#2D3748"/>
+<path d="M960 140C960 140 1260 240 1260 540C1260 840 960 940 960 940C960 940 660 840 660 540C660 240 960 140 960 140Z" fill="#4A5568"/>
+<text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="Arial" font-size="60" fill="#E2E8F0">Education Background Placeholder</text>
+</svg>

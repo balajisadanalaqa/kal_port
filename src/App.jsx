@@ -41,18 +41,26 @@ function App() {
 
   return (
     <ThemeProvider>
-      {/* Grey background bar behind NavBar */}
-      {/* <div className="fixed top-0 left-0 w-full h-14 z-0 bg-gray-200 dark:bg-gray-800"></div> */}
-      <div className="font-body bg-background text-text min-h-screen pt-14 pb-20 md:pb-0">
-        <a id="home" />
+      <div className="flex min-h-screen flex-col bg-background font-body text-text overflow-x-hidden">
         <NavBar />
+        <main className="flex-1 min-w-0 overflow-x-hidden overscroll-contain pt-4 md:pb-16 space-y-16">
+          <section id="home" className="w-full px-3 sm:px-6 lg:px-0 xl:px-4">
+            <Hero />
+          </section>
+          <section id="experience" className="w-full px-4 sm:px-6 lg:px-10">
+            <Experience />
+          </section>
+          <section id="education" className="w-full px-4 sm:px-6 lg:px-10">
+            <Education />
+          </section>
+          <section id="reviews" className="w-full px-4 sm:px-6 lg:px-10">
+            <Reviews />
+          </section>
+          <section id="contact" className="w-full px-4 sm:px-6 lg:px-10">
+            <Footer />
+          </section>
+        </main>
         <MobileNavBar />
-        <Hero />
-        {/* <Carousel slides={reviews} /> */}
-        <Experience />
-        <Education />
-        <Reviews />
-        <Footer />
       </div>
     </ThemeProvider>
   );
