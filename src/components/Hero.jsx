@@ -34,7 +34,27 @@ const Hero = () => {
   // Get highest education
   const highestEducation = education[0]; // DPT is the highest degree
 
+  // Scroll to the beginning when component mounts
+  useEffect(() => {
+    const scrollToBeginning = () => {
+      if (scrollContainerRef.current) {
+        // Reset scroll position to 0
+        scrollContainerRef.current.scrollTo({ left: 0, behavior: 'instant' });
+      }
+    };
 
+    // Use multiple techniques to ensure the scroll position is set correctly
+    // First, try immediately
+    scrollToBeginning();
+
+    // Then on the next animation frame
+    requestAnimationFrame(() => {
+      scrollToBeginning();
+
+      // And once more after a short delay to account for any layout shifts
+      setTimeout(scrollToBeginning, 30);
+    });
+  }, []);
 
   // Function to check if a card is the center/fully displayed one
   const isCenterCard = (index) => {
@@ -85,7 +105,7 @@ const Hero = () => {
 
 <div className="relative z-10 flex w-full flex-col gap-3 px-3 py-4 sm:px-4 md:min-h-[360px] lg:min-h-[420px] lg:flex-row lg:items-center lg:gap-6 lg:px-5 xl:px-6">
         {/* Profile summary column (left) */}
-<div className="flex w-full min-w-0 flex-col items-center gap-3 text-center sm:gap-4 lg:max-w-[300px] lg:flex-[0.28] lg:items-start lg:text-left">
+<div className="flex w-full min-w-0 flex-col items-center gap-3 text-center sm:gap-4 lg:max-w-[300px] lg:flex-[0.28] lg:items-start lg:text-left mt-9 lg:mt-4">
           <div className="flex w-full flex-col items-center gap-2.5 lg:items-start">
             <img
               src="https://i.pravatar.cc/150?u=drchelli"
@@ -159,7 +179,7 @@ const Hero = () => {
         </div>
 
         {/* Patient gallery column (right) */}
-        <div className="relative flex w-full min-w-0 flex-1 flex-col overflow-hidden rounded-3xl border border-border bg-surface/90 shadow-xl min-h-[320px] max-h-[340px] sm:min-h-[380px] sm:max-h-[400px] md:min-h-[440px] md:max-h-[460px] lg:flex-1 lg:min-h-[520px] lg:max-h-[540px] lg:self-stretch">
+        <div className="relative flex w-full min-w-0 flex-1 lg:mt-4 flex-col overflow-hidden rounded-3xl border border-border bg-surface/90 shadow-xl min-h-[320px] max-h-[340px] sm:min-h-[380px] sm:max-h-[400px] md:min-h-[440px] md:max-h-[460px] lg:flex-1 lg:min-h-[520px] lg:max-h-[540px] lg:self-stretch">
           <div
             ref={scrollContainerRef}
             className="scrollbar-hide flex h-full min-w-0 gap-1.5 overflow-x-auto overflow-y-hidden overscroll-x-contain px-1 py-1.5 snap-x snap-mandatory sm:px-1.5 sm:py-2 md:gap-2 md:px-2"
