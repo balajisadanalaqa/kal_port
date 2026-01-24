@@ -43,40 +43,40 @@ const AdminDashboard = () => {
                     </Link>
                   </li>
                   <li>
-                    <Link 
-                      to="/admin/summary" 
+                    <Link
+                      to="/admin/dashboard/summary"
                       className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
                     >
                       Summary
                     </Link>
                   </li>
                   <li>
-                    <Link 
-                      to="/admin/education" 
+                    <Link
+                      to="/admin/dashboard/education"
                       className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
                     >
                       Education
                     </Link>
                   </li>
                   <li>
-                    <Link 
-                      to="/admin/experience" 
+                    <Link
+                      to="/admin/dashboard/experience"
                       className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
                     >
                       Experience
                     </Link>
                   </li>
                   <li>
-                    <Link 
-                      to="/admin/patients" 
+                    <Link
+                      to="/admin/dashboard/patients"
                       className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
                     >
                       Patients
                     </Link>
                   </li>
                   <li>
-                    <Link 
-                      to="/admin/reviews" 
+                    <Link
+                      to="/admin/dashboard/reviews"
                       className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
                     >
                       Reviews

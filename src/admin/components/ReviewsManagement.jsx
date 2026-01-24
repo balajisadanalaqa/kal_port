@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { reviews } from '../../data/reviewData';
+import React, { useState, useEffect } from 'react';
+import { fetchCollection, addDocument, updateDocument, deleteDocument } from '../../firebase/firebaseUtils';
 
 const ReviewsManagement = () => {
-  const [reviewsList, setReviewsList] = useState(reviews);
+  const [reviewsList, setReviewsList] = useState([]);
   const [isAdding, setIsAdding] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -14,13 +14,31 @@ const ReviewsManagement = () => {
   });
   const [editingId, setEditingId] = useState(null);
   const [editFormData, setEditFormData] = useState({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadReviewsData();
+  }, []);
+
+  const loadReviewsData = async () => {
+    try {
+      setLoading(true);
+      const data = await fetchCollection('reviews');
+      setReviewsList(data);
+    } catch (error) {
+      console.error('Error loading reviews data:', error);
+      alert('Error loading reviews data');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleAddChange = (e) => {
     const { name, value, type, checked } = e.target;
     if (type === 'checkbox') {
       setFormData(prev => ({
         ...prev,
-        beforeAfter: checked 
+        beforeAfter: checked
           ? [...prev.beforeAfter, value]
           : prev.beforeAfter.filter(item => item !== value)
       }));
@@ -42,7 +60,7 @@ const ReviewsManagement = () => {
     if (type === 'checkbox') {
       setEditFormData(prev => ({
         ...prev,
-        beforeAfter: checked 
+        beforeAfter: checked
           ? [...prev.beforeAfter, value]
           : prev.beforeAfter.filter(item => item !== value)
       }));
@@ -59,39 +77,49 @@ const ReviewsManagement = () => {
     }
   };
 
-  const handleAddSubmit = (e) => {
+  const handleAddSubmit = async (e) => {
     e.preventDefault();
-    const newReview = {
-      ...formData,
-      id: Date.now() // temporary ID until saved to Firebase
-    };
-    setReviewsList(prev => [...prev, newReview]);
-    setFormData({
-      name: '',
-      treatment: '',
-      feedback: '',
-      rating: 5,
-      photo: '',
-      beforeAfter: []
-    });
-    setIsAdding(false);
-    alert('Review added successfully!');
+    try {
+      await addDocument('reviews', formData);
+      setFormData({
+        name: '',
+        treatment: '',
+        feedback: '',
+        rating: 5,
+        photo: '',
+        beforeAfter: []
+      });
+      setIsAdding(false);
+      loadReviewsData(); // Reload the data
+      alert('Review added successfully!');
+    } catch (error) {
+      console.error('Error adding review:', error);
+      alert('Error adding review: ' + error.message);
+    }
   };
 
-  const handleEditSubmit = (id) => {
-    setReviewsList(prev => 
-      prev.map(item => 
-        item.id === id ? { ...item, ...editFormData } : item
-      )
-    );
-    setEditingId(null);
-    alert('Review updated successfully!');
+  const handleEditSubmit = async (id) => {
+    try {
+      await updateDocument('reviews', id, editFormData);
+      setEditingId(null);
+      loadReviewsData(); // Reload the data
+      alert('Review updated successfully!');
+    } catch (error) {
+      console.error('Error updating review:', error);
+      alert('Error updating review: ' + error.message);
+    }
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this review?')) {
-      setReviewsList(prev => prev.filter(item => item.id !== id));
-      alert('Review deleted successfully!');
+      try {
+        await deleteDocument('reviews', id);
+        loadReviewsData(); // Reload the data
+        alert('Review deleted successfully!');
+      } catch (error) {
+        console.error('Error deleting review:', error);
+        alert('Error deleting review: ' + error.message);
+      }
     }
   };
 
@@ -103,6 +131,10 @@ const ReviewsManagement = () => {
   const cancelEditing = () => {
     setEditingId(null);
   };
+
+  if (loading) {
+    return <div className="text-center py-8">Loading...</div>;
+  }
 
   return (
     <div>
@@ -213,9 +245,9 @@ const ReviewsManagement = () => {
 
       <div className="space-y-4">
         <h3 className="text-lg font-medium text-gray-800">Existing Reviews</h3>
-        {reviewsList.map((item, index) => (
-          <div key={item.id || index} className="bg-white rounded-lg shadow-md p-4">
-            {editingId === (item.id || index) ? (
+        {reviewsList.map((item) => (
+          <div key={item.id} className="bg-white rounded-lg shadow-md p-4">
+            {editingId === item.id ? (
               <div>
                 <h4 className="text-md font-medium text-gray-800 mb-3">Edit Review</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -291,7 +323,7 @@ const ReviewsManagement = () => {
                 </div>
                 <div className="mt-4 flex space-x-2">
                   <button
-                    onClick={() => handleEditSubmit(item.id || index)}
+                    onClick={() => handleEditSubmit(item.id)}
                     className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
                   >
                     Save
@@ -336,7 +368,7 @@ const ReviewsManagement = () => {
                       Edit
                     </button>
                     <button
-                      onClick={() => handleDelete(item.id || index)}
+                      onClick={() => handleDelete(item.id)}
                       className="px-3 py-1 bg-red-500 text-white text-sm rounded-md hover:bg-red-600"
                     >
                       Delete

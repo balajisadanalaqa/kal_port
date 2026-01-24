@@ -1,21 +1,52 @@
 import React, { useState, useEffect } from 'react';
-import { summary } from '../../data/summaryData';
+import { fetchCollection, updateDocument, addDocument } from '../../firebase/firebaseUtils';
 
 const SummaryManagement = () => {
   const [formData, setFormData] = useState({
-    short_name: summary.short_name,
-    name: summary.name,
-    title: summary.title,
-    bio: summary.bio,
+    short_name: '',
+    name: '',
+    title: '',
+    bio: '',
     profileLinks: {
-      linkedin: summary.profileLinks?.linkedin || '',
-      instagram: summary.profileLinks?.instagram || '',
-      email: summary.profileLinks?.email || ''
+      linkedin: '',
+      instagram: '',
+      email: ''
     },
-    profileImage: summary.profileImage
+    profileImage: ''
   });
-
   const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadSummaryData();
+  }, []);
+
+  const loadSummaryData = async () => {
+    try {
+      setLoading(true);
+      const summaryData = await fetchCollection('about');
+      if (summaryData.length > 0) {
+        const summary = summaryData[0]; // Assuming only one summary document
+        setFormData({
+          short_name: summary.short_name || '',
+          name: summary.name || '',
+          title: summary.title || '',
+          bio: summary.bio || '',
+          profileLinks: summary.profileLinks || {
+            linkedin: '',
+            instagram: '',
+            email: ''
+          },
+          profileImage: summary.profileImage || ''
+        });
+      }
+    } catch (error) {
+      console.error('Error loading summary data:', error);
+      alert('Error loading summary data');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -35,13 +66,31 @@ const SummaryManagement = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // In a real app, you would save this to Firebase
-    console.log('Summary data updated:', formData);
-    alert('Summary data updated successfully!');
-    setIsEditing(false);
+    try {
+      // We'll create or update the summary document
+      const summaryData = await fetchCollection('about');
+      if (summaryData.length > 0) {
+        // Update existing document
+        await updateDocument('about', summaryData[0].id, formData);
+      } else {
+        // Create new document if none exists
+        await addDocument('about', formData);
+      }
+      alert('Summary data updated successfully!');
+      setIsEditing(false);
+      // Reload the data to reflect changes
+      loadSummaryData();
+    } catch (error) {
+      console.error('Error updating summary:', error);
+      alert('Error updating summary: ' + error.message);
+    }
   };
+
+  if (loading) {
+    return <div className="text-center py-8">Loading...</div>;
+  }
 
   return (
     <div>

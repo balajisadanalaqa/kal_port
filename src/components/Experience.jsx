@@ -1,7 +1,61 @@
-import React from "react";
-import { experience } from "../data/experienceData";
+import React, { useState, useEffect } from "react";
+import { fetchCollection } from "../firebase/firebaseUtils";
 
 const Experience = () => {
+  const [experience, setExperience] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadExperience = async () => {
+      try {
+        const data = await fetchCollection('experience');
+        setExperience(data);
+      } catch (error) {
+        console.error('Error loading experience data:', error);
+        // Fallback to static data if Firebase fails
+        setExperience([
+          {
+            role: "Senior Physiotherapist",
+            location: "Healing Hands Clinic, Mumbai",
+            years: "2019 - Present",
+            description: "Lead therapist for orthopedic and sports injury cases. Developed patient education programs and supervised junior staff.",
+            image: "exp1.jpg",
+            id: "fallback-1"
+          },
+          {
+            role: "Physiotherapist",
+            location: "Sunrise Hospital, Delhi",
+            years: "2017 - 2019",
+            description: "Managed post-surgical rehabilitation and outpatient therapy. Specialized in manual therapy techniques.",
+            image: "exp2.jpg",
+            id: "fallback-2"
+          }
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadExperience();
+  }, []);
+
+  if (loading) {
+    return (
+      <section id="experience" className="py-12 bg-background relative overflow-hidden">
+        <div className="relative z-10 max-w-6xl mx-auto px-4">
+          <div className="text-center mb-6 sm:mb-8 md:mb-12">
+            <h2 className="text-xl sm:text-3xl md:text-5xl font-heading font-bold gradient-text neon-text mb-2 sm:mb-4">
+              Experience
+            </h2>
+            <p className="text-[10px] sm:text-base text-text-secondary max-w-2xl mx-auto">
+              Loading experience data...
+            </p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section id="experience" className="py-12 bg-background relative overflow-hidden">
       {/* Background Elements */}
@@ -20,7 +74,7 @@ const Experience = () => {
 
         <div className="grid gap-3 sm:gap-4 max-w-5xl mx-auto">
           {experience.map((item, idx) => (
-            <div key={idx} className="group" data-aos="fade-up" data-aos-delay={idx * 100}>
+            <div key={item.id || idx} className="group" data-aos="fade-up" data-aos-delay={idx * 100}>
               <div className="crypto-card h-full hover:scale-105 transition-all duration-300 p-2 sm:p-3">
                 <div className="flex items-start gap-2 sm:gap-4">
                   {/* Experience Icon */}

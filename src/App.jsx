@@ -8,7 +8,6 @@ import Education from "./components/Education";
 import Experience from "./components/Experience";
 import Reviews from "./components/Reviews";
 import Footer from "./components/Footer";
-// import { reviews } from "./data/reviewData";
 import { ThemeProvider } from "./context/ThemeContext";
 import AOS from "aos";
 import "aos/dist/aos.css";

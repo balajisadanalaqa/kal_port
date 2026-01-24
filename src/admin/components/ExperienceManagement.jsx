@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { experience } from '../../data/experienceData';
+import React, { useState, useEffect } from 'react';
+import { fetchCollection, addDocument, updateDocument, deleteDocument } from '../../firebase/firebaseUtils';
 
 const ExperienceManagement = () => {
-  const [experienceList, setExperienceList] = useState(experience);
+  const [experienceList, setExperienceList] = useState([]);
   const [isAdding, setIsAdding] = useState(false);
   const [formData, setFormData] = useState({
     role: '',
@@ -13,6 +13,24 @@ const ExperienceManagement = () => {
   });
   const [editingId, setEditingId] = useState(null);
   const [editFormData, setEditFormData] = useState({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadExperienceData();
+  }, []);
+
+  const loadExperienceData = async () => {
+    try {
+      setLoading(true);
+      const data = await fetchCollection('experience');
+      setExperienceList(data);
+    } catch (error) {
+      console.error('Error loading experience data:', error);
+      alert('Error loading experience data');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleAddChange = (e) => {
     const { name, value } = e.target;
@@ -30,38 +48,48 @@ const ExperienceManagement = () => {
     }));
   };
 
-  const handleAddSubmit = (e) => {
+  const handleAddSubmit = async (e) => {
     e.preventDefault();
-    const newExperience = {
-      ...formData,
-      id: Date.now() // temporary ID until saved to Firebase
-    };
-    setExperienceList(prev => [...prev, newExperience]);
-    setFormData({
-      role: '',
-      location: '',
-      years: '',
-      description: '',
-      image: ''
-    });
-    setIsAdding(false);
-    alert('Experience record added successfully!');
+    try {
+      await addDocument('experience', formData);
+      setFormData({
+        role: '',
+        location: '',
+        years: '',
+        description: '',
+        image: ''
+      });
+      setIsAdding(false);
+      loadExperienceData(); // Reload the data
+      alert('Experience record added successfully!');
+    } catch (error) {
+      console.error('Error adding experience:', error);
+      alert('Error adding experience: ' + error.message);
+    }
   };
 
-  const handleEditSubmit = (id) => {
-    setExperienceList(prev => 
-      prev.map(item => 
-        item.id === id ? { ...item, ...editFormData } : item
-      )
-    );
-    setEditingId(null);
-    alert('Experience record updated successfully!');
+  const handleEditSubmit = async (id) => {
+    try {
+      await updateDocument('experience', id, editFormData);
+      setEditingId(null);
+      loadExperienceData(); // Reload the data
+      alert('Experience record updated successfully!');
+    } catch (error) {
+      console.error('Error updating experience:', error);
+      alert('Error updating experience: ' + error.message);
+    }
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this experience record?')) {
-      setExperienceList(prev => prev.filter(item => item.id !== id));
-      alert('Experience record deleted successfully!');
+      try {
+        await deleteDocument('experience', id);
+        loadExperienceData(); // Reload the data
+        alert('Experience record deleted successfully!');
+      } catch (error) {
+        console.error('Error deleting experience:', error);
+        alert('Error deleting experience: ' + error.message);
+      }
     }
   };
 
@@ -73,6 +101,10 @@ const ExperienceManagement = () => {
   const cancelEditing = () => {
     setEditingId(null);
   };
+
+  if (loading) {
+    return <div className="text-center py-8">Loading...</div>;
+  }
 
   return (
     <div>

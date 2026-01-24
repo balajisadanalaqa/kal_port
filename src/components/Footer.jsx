@@ -1,8 +1,61 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { FaLinkedin, FaInstagram, FaEnvelope, FaPhone } from "react-icons/fa";
-import { summary } from "../data/summaryData";
+import { fetchCollection } from "../firebase/firebaseUtils";
 
 const Footer = () => {
+  const [summary, setSummary] = useState({
+    name: "Dr. Kalyani Sadanala, PT",
+    profileLinks: {
+      linkedin: "https://linkedin.com/in/priyachelli",
+      instagram: "https://instagram.com/drpriyachelli",
+      email: "priya.chelli@email.com"
+    }
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadSummaryData = async () => {
+      try {
+        const aboutData = await fetchCollection('about');
+        if (aboutData.length > 0) {
+          setSummary({
+            name: aboutData[0].name || "Dr. Kalyani Sadanala, PT",
+            profileLinks: {
+              linkedin: aboutData[0].profileLinks?.linkedin || "https://linkedin.com/in/priyachelli",
+              instagram: aboutData[0].profileLinks?.instagram || "https://instagram.com/drpriyachelli",
+              email: aboutData[0].profileLinks?.email || "priya.chelli@email.com"
+            }
+          });
+        }
+      } catch (error) {
+        console.error('Error loading summary data:', error);
+        // Fallback to default data
+        setSummary({
+          name: "Dr. Kalyani Sadanala, PT",
+          profileLinks: {
+            linkedin: "https://linkedin.com/in/priyachelli",
+            instagram: "https://instagram.com/drpriyachelli",
+            email: "priya.chelli@email.com"
+          }
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadSummaryData();
+  }, []);
+
+  if (loading) {
+    return (
+      <footer id="contact" className="bg-background text-text py-12 relative overflow-hidden">
+        <div className="relative z-10 max-w-6xl mx-auto px-4 text-center">
+          <p className="text-[8px] sm:text-text-secondary">Loading...</p>
+        </div>
+      </footer>
+    );
+  }
+
   return (
     <footer id="contact" className="bg-background text-text py-12 relative overflow-hidden">
       {/* Background Elements */}

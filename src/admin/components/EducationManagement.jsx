@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { education } from '../../data/educationData';
+import React, { useState, useEffect } from 'react';
+import { fetchCollection, addDocument, updateDocument, deleteDocument } from '../../firebase/firebaseUtils';
 
 const EducationManagement = () => {
-  const [educationList, setEducationList] = useState(education);
+  const [educationList, setEducationList] = useState([]);
   const [isAdding, setIsAdding] = useState(false);
   const [formData, setFormData] = useState({
     degree: '',
@@ -12,6 +12,24 @@ const EducationManagement = () => {
   });
   const [editingId, setEditingId] = useState(null);
   const [editFormData, setEditFormData] = useState({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadEducationData();
+  }, []);
+
+  const loadEducationData = async () => {
+    try {
+      setLoading(true);
+      const data = await fetchCollection('education');
+      setEducationList(data);
+    } catch (error) {
+      console.error('Error loading education data:', error);
+      alert('Error loading education data');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleAddChange = (e) => {
     const { name, value } = e.target;
@@ -29,37 +47,47 @@ const EducationManagement = () => {
     }));
   };
 
-  const handleAddSubmit = (e) => {
+  const handleAddSubmit = async (e) => {
     e.preventDefault();
-    const newEducation = {
-      ...formData,
-      id: Date.now() // temporary ID until saved to Firebase
-    };
-    setEducationList(prev => [...prev, newEducation]);
-    setFormData({
-      degree: '',
-      institute: '',
-      duration: '',
-      description: ''
-    });
-    setIsAdding(false);
-    alert('Education record added successfully!');
+    try {
+      await addDocument('education', formData);
+      setFormData({
+        degree: '',
+        institute: '',
+        duration: '',
+        description: ''
+      });
+      setIsAdding(false);
+      loadEducationData(); // Reload the data
+      alert('Education record added successfully!');
+    } catch (error) {
+      console.error('Error adding education:', error);
+      alert('Error adding education: ' + error.message);
+    }
   };
 
-  const handleEditSubmit = (id) => {
-    setEducationList(prev => 
-      prev.map(item => 
-        item.id === id ? { ...item, ...editFormData } : item
-      )
-    );
-    setEditingId(null);
-    alert('Education record updated successfully!');
+  const handleEditSubmit = async (id) => {
+    try {
+      await updateDocument('education', id, editFormData);
+      setEditingId(null);
+      loadEducationData(); // Reload the data
+      alert('Education record updated successfully!');
+    } catch (error) {
+      console.error('Error updating education:', error);
+      alert('Error updating education: ' + error.message);
+    }
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this education record?')) {
-      setEducationList(prev => prev.filter(item => item.id !== id));
-      alert('Education record deleted successfully!');
+      try {
+        await deleteDocument('education', id);
+        loadEducationData(); // Reload the data
+        alert('Education record deleted successfully!');
+      } catch (error) {
+        console.error('Error deleting education:', error);
+        alert('Error deleting education: ' + error.message);
+      }
     }
   };
 
@@ -71,6 +99,10 @@ const EducationManagement = () => {
   const cancelEditing = () => {
     setEditingId(null);
   };
+
+  if (loading) {
+    return <div className="text-center py-8">Loading...</div>;
+  }
 
   return (
     <div>
@@ -155,9 +187,9 @@ const EducationManagement = () => {
 
       <div className="space-y-4">
         <h3 className="text-lg font-medium text-gray-800">Existing Education Records</h3>
-        {educationList.map((item, index) => (
-          <div key={item.id || index} className="bg-white rounded-lg shadow-md p-4">
-            {editingId === (item.id || index) ? (
+        {educationList.map((item) => (
+          <div key={item.id} className="bg-white rounded-lg shadow-md p-4">
+            {editingId === item.id ? (
               <div>
                 <h4 className="text-md font-medium text-gray-800 mb-3">Edit Education</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -206,7 +238,7 @@ const EducationManagement = () => {
                 </div>
                 <div className="mt-4 flex space-x-2">
                   <button
-                    onClick={() => handleEditSubmit(item.id || index)}
+                    onClick={() => handleEditSubmit(item.id)}
                     className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
                   >
                     Save
@@ -233,7 +265,7 @@ const EducationManagement = () => {
                     Edit
                   </button>
                   <button
-                    onClick={() => handleDelete(item.id || index)}
+                    onClick={() => handleDelete(item.id)}
                     className="px-3 py-1 bg-red-500 text-white text-sm rounded-md hover:bg-red-600"
                   >
                     Delete

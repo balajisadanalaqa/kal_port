@@ -1,7 +1,64 @@
-import React from "react";
-import { reviews } from "../data/reviewData";
+import React, { useState, useEffect } from "react";
+import { fetchCollection } from "../firebase/firebaseUtils";
 
 const Reviews = () => {
+  const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadReviews = async () => {
+      try {
+        const data = await fetchCollection('reviews');
+        setReviews(data);
+      } catch (error) {
+        console.error('Error loading reviews data:', error);
+        // Fallback to static data if Firebase fails
+        setReviews([
+          {
+            name: "Amit S.",
+            treatment: "ACL Rehabilitation",
+            feedback: "Dr. Chelli's care and encouragement made my recovery smooth and fast. Highly recommend!",
+            rating: 5,
+            photo: "review1.jpg",
+            beforeAfter: ["before1.jpg", "after1.jpg"],
+            id: "fallback-1"
+          },
+          {
+            name: "Meera K.",
+            treatment: "Frozen Shoulder",
+            feedback: "Very patient and knowledgeable. My pain reduced drastically in just a few sessions.",
+            rating: 5,
+            photo: "review2.jpg",
+            id: "fallback-2"
+          }
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadReviews();
+  }, []);
+
+  if (loading) {
+    return (
+      <section id="reviews" className="py-12 bg-background relative overflow-hidden">
+        <div className="relative z-10 max-w-7xl mx-auto px-4">
+          <div className="space-y-12">
+            <div className="text-center mb-6 sm:mb-8 md:mb-12">
+              <h2 className="text-xl sm:text-3xl md:text-5xl font-heading font-bold gradient-text neon-text mb-2 sm:mb-4">
+                Patient Reviews
+              </h2>
+              <p className="text-[10px] sm:text-base text-text-secondary max-w-2xl mx-auto">
+                Loading reviews...
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section id="reviews" className="py-12 bg-background relative overflow-hidden">
       {/* Background Elements */}
@@ -23,7 +80,7 @@ const Reviews = () => {
           <div className="max-w-6xl mx-auto">
             <div className="flex flex-nowrap gap-3 sm:gap-6 overflow-x-auto pb-4 scrollbar-hide">
               {reviews.map((review, idx) => (
-                <div key={idx} className="flex-shrink-0 w-[300px] sm:w-[320px] lg:w-[350px] group" data-aos="fade-right" data-aos-delay={idx * 50} data-aos-duration="600">
+                <div key={review.id || idx} className="flex-shrink-0 w-[300px] sm:w-[320px] lg:w-[350px] group" data-aos="fade-right" data-aos-delay={idx * 50} data-aos-duration="600">
                   <div className="crypto-card h-full hover:scale-[1.03] transition-all duration-300 p-2 sm:p-3 relative z-10">
                     {/* Review Header */}
                     <div className="flex items-start justify-between mb-3">
