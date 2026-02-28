@@ -1,0 +1,177 @@
+[
+  {
+    "id": 1,
+    "patientName": "Sarah Johnson",
+    "condition": "Lower Back Pain",
+    "treatment": "Physical Therapy & Core Strengthening",
+    "recoveryPeriod": "8-12 weeks",
+    "movementsDone": [
+      "Pelvic tilts",
+      "Bird dog",
+      "Dead bug",
+      "Bridges"
+    ],
+    "boxColor": "#3B82F6",
+    "images": [
+
+    ],
+    "videos": [
+      {
+        "id": 1,
+        "url": "public/media/patients/sarah_johnson/videos/VID_20230209_170236.mp4",
+        "description": "Dead bug exercise demonstration with breathing technique"
+      },
+      {
+        "id": 2,
+        "url": "public/media/patients/sarah_johnson/videos/VID_20230209_170457.mp4",
+        "description": "Bridge exercise progression from basic to advanced"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "patientName": "Michael Chen",
+    "condition": "Knee Rehabilitation",
+    "treatment": "Post-Surgery Recovery & Strength Training",
+    "recoveryPeriod": "12-16 weeks",
+    "movementsDone": [
+      "Quad sets",
+      "Straight leg raises",
+      "Mini squats",
+      "Step-ups"
+    ],
+    "boxColor": "#10B981",
+    "images": [
+
+    ],
+    "videos": [
+      {
+        "id": 1,
+        "url": "public/media/patients/michael_chen/videos/VID_20230128_104843.mp4",
+        "description": "Mini squat technique with proper knee alignment"
+      },
+      {
+        "id": 2,
+        "url": "public/media/patients/michael_chen/videos/VID_20230128_104857.mp4",
+        "description": "Balance exercises on unstable surfaces"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "patientName": "Emily Rodriguez",
+    "condition": "Shoulder Impingement",
+    "treatment": "Rotator Cuff Strengthening & Mobility",
+    "recoveryPeriod": "6-10 weeks",
+    "movementsDone": [
+      "Wall slides",
+      "External rotations",
+      "Scapular retractions",
+      "Prone Y's"
+    ],
+    "boxColor": "#F59E0B",
+    "images": [
+      {
+        "id": 1,
+        "url": "/media/patients/emily_rodriguez/images/IMG-20230310-WA0014.jpg",
+        "description": ""
+      },
+      {
+        "id": 2,
+        "url": "/media/patients/emily_rodriguez/images/IMG_20230204_164712.jpg",
+        "description": ""
+      },
+      {
+        "id": 3,
+        "url": "/media/patients/emily_rodriguez/images/IMG_20230204_164714.jpg",
+        "description": ""
+      },
+      {
+        "id": 4,
+        "url": "/media/patients/emily_rodriguez/images/IMG_20230310_162051.jpg",
+        "description": ""
+      }
+    ],
+    "videos": [
+      {
+        "id": 1,
+        "url": "/media/patients/emily_rodriguez/videos/VID-20230225-WA0007.mp4",
+        "description": ""
+      },
+      {
+        "id": 2,
+        "url": "/media/patients/emily_rodriguez/videos/VID-20230310-WA0032.mp4",
+        "description": ""
+      },
+      {
+        "id": 3,
+        "url": "/media/patients/emily_rodriguez/videos/VID_20230127_132427.mp4",
+        "description": ""
+      },
+      {
+        "id": 4,
+        "url": "/media/patients/emily_rodriguez/videos/VID_20230127_132553.mp4",
+        "description": ""
+      },
+      {
+        "id": 5,
+        "url": "/media/patients/emily_rodriguez/videos/VID_20230127_155850.mp4",
+        "description": ""
+      },
+      {
+        "id": 6,
+        "url": "/media/patients/emily_rodriguez/videos/VID_20230127_160429.mp4",
+        "description": ""
+      },
+      {
+        "id": 7,
+        "url": "/media/patients/emily_rodriguez/videos/VID_20230127_160500.mp4",
+        "description": ""
+      },
+      {
+        "id": 8,
+        "url": "/media/patients/emily_rodriguez/videos/VID_20230127_160607.mp4",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "patientName": "David Thompson",
+    "condition": "Ankle Sprain Recovery",
+    "treatment": "Balance Training & Proprioception",
+    "recoveryPeriod": "4-8 weeks",
+    "movementsDone": [
+      "Single leg balance",
+      "Heel-to-toe walk",
+      "Calf raises",
+      "Ankle circles"
+    ],
+    "boxColor": "#EF4444",
+    "images": [
+      {
+        "id": 1,
+        "url": "/media/patients/david_thompson/images/IMG-20230131-WA0015.jpg",
+        "description": ""
+      },
+      {
+        "id": 2,
+        "url": "/media/patients/david_thompson/images/IMG_20230227_104134.jpg",
+        "description": ""
+      },
+      {
+        "id": 3,
+        "url": "/media/patients/david_thompson/images/IMG_20230306_110243.jpg",
+        "description": ""
+      }
+    ],
+    "videos": [
+      {
+        "id": 1,
+        "url": "/media/patients/david_thompson/videos/VID_20230127_103701.mp4",
+        "description": ""
+      }
+    ]
+  }
+
+]

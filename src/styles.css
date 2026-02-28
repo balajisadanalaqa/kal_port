@@ -64,7 +64,7 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
   min-height: 100vh;
   overflow-x: hidden;
-  overscroll-behavior-y: contain;
+  overflow-y: auto;
   overscroll-behavior-x: none;
 }
 
@@ -895,4 +895,24 @@ video {
 
 .dark .border-border {
   border-color: var(--color-glass-border-dark);
+}
+
+/* Hero glass card — text colors that read well on glass morph (not black, bio not camouflaged) */
+.hero-glass-name {
+  color: #1e3a5f;
+}
+.dark .hero-glass-name {
+  color: #f1f5f9;
+}
+.hero-glass-bio {
+  color: #334155;
+}
+.dark .hero-glass-bio {
+  color: #e2e8f0;
+}
+.hero-glass-degree {
+  color: #0369a1;
+}
+.dark .hero-glass-degree {
+  color: #22d3ee;
 }

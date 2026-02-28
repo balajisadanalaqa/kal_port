@@ -1,9 +1,25 @@
-import React from "react";
-import { summary } from "../data/summaryData";
-import { reviews } from "../data/reviewData";
+import React, { useState, useEffect } from "react";
+
+const defaultSummary = { short_name: "K S", name: "Dr. Kalyani Sadanala, PT" };
+const defaultReviews = [
+  { name: "Amit S" },
+  { name: "Meera K" },
+];
 
 const NavBarBackground = () => {
-  // Duplicate reviews for a seamless scrolling effect
+  const [summary, setSummary] = useState(defaultSummary);
+  const [reviews, setReviews] = useState(defaultReviews);
+
+  useEffect(() => {
+    Promise.all([
+      fetch("/data/about.json").then((r) => (r.ok ? r.json() : null)),
+      fetch("/data/reviews.json").then((r) => (r.ok ? r.json() : null)),
+    ]).then(([about, reviewsData]) => {
+      if (about) setSummary(about);
+      if (Array.isArray(reviewsData) && reviewsData.length > 0) setReviews(reviewsData);
+    });
+  }, []);
+
   const duplicatedReviews = [...reviews, ...reviews, ...reviews];
 
   return (

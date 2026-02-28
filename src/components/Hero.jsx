@@ -1,11 +1,11 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
-import { fetchCollection } from "../firebase/firebaseUtils";
+import React, { useState, useRef, useEffect } from "react";
+import EducationBg from "../assets/images/education-bg.jpg";
 import PatientCaseCarousel from "./PatientCaseCarousel";
 import PatientDetailsModal from "./PatientDetailsModal";
 
 const getCardMetrics = () => {
   if (typeof window === "undefined") {
-    return { cardWidth: 320, gap: 12 };
+    return { cardWidth: 280, gap: 12 };
   }
 
   if (window.innerWidth < 640) {
@@ -13,14 +13,14 @@ const getCardMetrics = () => {
   }
 
   if (window.innerWidth < 768) {
-    return { cardWidth: 320, gap: 14 };
+    return { cardWidth: 280, gap: 14 };
   }
 
   if (window.innerWidth < 1024) {
-    return { cardWidth: 340, gap: 16 };
+    return { cardWidth: 300, gap: 16 };
   }
 
-  return { cardWidth: 380, gap: 20 };
+  return { cardWidth: 280, gap: 20 };
 };
 
 const Hero = () => {
@@ -28,169 +28,77 @@ const Hero = () => {
   // Removed scroll direction functionality - now only scrolls left automatically
   const [isHovered, setIsHovered] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState(null);
-  const [summary, setSummary] = useState({
+  const fallbackSummary = {
     name: "Dr. Kalyani Sadanala, PT",
     bio: "Dedicated to holistic healing and patient-centered care, Dr. Chelli brings over 10 years of experience in musculoskeletal and neurorehabilitation. Passionate about empowering patients to achieve their best mobility and quality of life.",
-    profileImage: "https://i.pravatar.cc/150?u=drchelli"
-  });
-  const [education, setEducation] = useState([
+    profileImage: "/media/profile/physiotherapist.jpg"
+  };
+
+  const [summary, setSummary] = useState(fallbackSummary);
+  const fallbackEducation = [
     {
+      id: "fallback-1",
       degree: "Doctor of Physical Therapy (DPT)",
       institute: "All India Institute of Medical Sciences",
       duration: "2015 - 2017",
-      description: "Specialized in neuro and musculoskeletal rehabilitation.",
-      id: "fallback-1"
+      description: "Specialized in neuro and musculoskeletal rehabilitation."
     },
     {
+      id: "fallback-2",
       degree: "Bachelor of Physiotherapy (BPT)",
       institute: "Delhi University",
       duration: "2010 - 2015",
-      description: "Graduated with distinction, focusing on evidence-based practice.",
-      id: "fallback-2"
+      description: "Graduated with distinction, focusing on evidence-based practice."
     }
-  ]);
-  const [patientsData, setPatientsData] = useState([
-    {
-      id: 1,
-      patientName: "Sarah Johnson",
-      condition: "Lower Back Pain",
-      treatment: "Physical Therapy & Core Strengthening",
-      recoveryPeriod: "8-12 weeks",
-      movementsDone: ["Pelvic tilts", "Bird dog", "Dead bug", "Bridges"],
-      boxColor: "#3B82F6", // Blue
-      images: [
-        {
-          id: 1,
-          url: "https://picsum.photos/seed/sarah1/800/600",
-          description: "Initial assessment showing poor posture and muscle imbalance"
-        },
-        {
-          id: 2,
-          url: "https://picsum.photos/seed/sarah2/800/600",
-          description: "Pelvic tilt exercise demonstration with proper form"
-        },
-        {
-          id: 3,
-          url: "https://picsum.photos/seed/sarah3/800/600",
-          description: "Bird dog exercise showing core stabilization"
-        },
-        {
-          id: 4,
-          url: "https://picsum.photos/seed/sarah4/800/600",
-          description: "Progress after 6 weeks showing improved posture"
-        }
-      ],
-      videos: [
-        {
-          id: 1,
-          url: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4",
-          description: "Dead bug exercise demonstration with breathing technique"
-        },
-        {
-          id: 2,
-          url: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_2mb.mp4",
-          description: "Bridge exercise progression from basic to advanced"
-        }
-      ]
-    },
-    {
-      id: 2,
-      patientName: "Michael Chen",
-      condition: "Knee Rehabilitation",
-      treatment: "Post-Surgery Recovery & Strength Training",
-      recoveryPeriod: "12-16 weeks",
-      movementsDone: ["Quad sets", "Straight leg raises", "Mini squats", "Step-ups"],
-      boxColor: "#10B981", // Green
-      images: [
-        {
-          id: 1,
-          url: "https://picsum.photos/seed/michael1/800/600",
-          description: "Post-surgery knee assessment and range of motion testing"
-        },
-        {
-          id: 2,
-          url: "https://picsum.photos/seed/michael2/800/600",
-          description: "Quad set exercise with biofeedback for muscle activation"
-        }
-      ],
-      videos: [
-        {
-          id: 1,
-          url: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_3mb.mp4",
-          description: "Mini squat technique with proper knee alignment"
-        }
-      ]
-    },
-    {
-      id: 3,
-      patientName: "Emily Rodriguez",
-      condition: "Shoulder Impingement",
-      treatment: "Rotator Cuff Strengthening & Mobility",
-      recoveryPeriod: "6-10 weeks",
-      movementsDone: ["Wall slides", "External rotations", "Scapular retractions", "Prone Y's"],
-      boxColor: "#F59E0B", // Amber
-      images: [
-        {
-          id: 1,
-          url: "https://picsum.photos/seed/emily1/800/600",
-          description: "Initial shoulder range of motion assessment"
-        }
-      ],
-      videos: []
-    }
-  ]);
+  ];
+
+  const [education, setEducation] = useState(fallbackEducation);
+  const [patientsData, setPatientsData] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Load all data from Firebase
+  // Load all data from static JSON
   useEffect(() => {
     const loadAllData = async () => {
       try {
-        // Load summary (about) data
-        const aboutData = await fetchCollection('about');
-        if (aboutData.length > 0) {
+        const [aboutRes, educationRes, patientsRes] = await Promise.all([
+          fetch("/data/about.json"),
+          fetch("/data/education.json"),
+          fetch("/data/patients.json")
+        ]);
+
+        if (aboutRes.ok) {
+          const aboutData = await aboutRes.json();
           setSummary({
-            name: aboutData[0].name || "Dr. Kalyani Sadanala, PT",
-            bio: aboutData[0].bio || "Dedicated to holistic healing and patient-centered care, Dr. Chelli brings over 10 years of experience in musculoskeletal and neurorehabilitation. Passionate about empowering patients to achieve their best mobility and quality of life.",
-            profileImage: aboutData[0].profileImage || "https://i.pravatar.cc/150?u=drchelli"
+            name: aboutData.name || fallbackSummary.name,
+            bio: aboutData.bio || fallbackSummary.bio,
+            profileImage: aboutData.profileImage || fallbackSummary.profileImage
           });
+        } else {
+
+          setSummary(fallbackSummary);
         }
 
-        // Load education data
-        const educationData = await fetchCollection('education');
-        if (educationData.length > 0) {
-          setEducation(educationData);
+        if (educationRes.ok) {
+          const educationData = await educationRes.json();
+          if (Array.isArray(educationData) && educationData.length > 0) {
+            setEducation(educationData);
+          } else {
+            setEducation(fallbackEducation);
+          }
+        } else {
+          setEducation(fallbackEducation);
         }
 
-        // Load patient data
-        const patientData = await fetchCollection('patients');
-        if (patientData.length > 0) {
-          setPatientsData(patientData);
+        if (patientsRes.ok) {
+          const patientData = await patientsRes.json();
+          if (Array.isArray(patientData) && patientData.length > 0) {
+            setPatientsData(patientData);
+          }
         }
       } catch (error) {
-        console.error('Error loading data from Firebase:', error);
-        // Use fallback data if there's an error
-        setSummary({
-          name: "Dr. Kalyani Sadanala, PT",
-          bio: "Dedicated to holistic healing and patient-centered care, Dr. Chelli brings over 10 years of experience in musculoskeletal and neurorehabilitation. Passionate about empowering patients to achieve their best mobility and quality of life.",
-          profileImage: "https://i.pravatar.cc/150?u=drchelli"
-        });
-        setEducation([
-          {
-            degree: "Doctor of Physical Therapy (DPT)",
-            institute: "All India Institute of Medical Sciences",
-            duration: "2015 - 2017",
-            description: "Specialized in neuro and musculoskeletal rehabilitation.",
-            id: "fallback-1"
-          },
-          {
-            degree: "Bachelor of Physiotherapy (BPT)",
-            institute: "Delhi University",
-            duration: "2010 - 2015",
-            description: "Graduated with distinction, focusing on evidence-based practice.",
-            id: "fallback-2"
-          }
-        ]);
-        // patientsData is already set to fallback in state initialization
+        console.error('Error loading static data:', error);
+        setSummary(fallbackSummary);
+        setEducation(fallbackEducation);
       } finally {
         setLoading(false);
       }
@@ -268,15 +176,12 @@ const Hero = () => {
 
   if (loading) {
     return (
-      <section className="relative w-full overflow-hidden rounded-3xl bg-background md:pt-6 md:mt-4">
-        <div className="relative z-10 flex w-full flex-col gap-3 px-3 py-4 sm:px-4">
-          <div className="flex w-full min-w-0 flex-col items-center gap-3 text-center sm:gap-4 lg:max-w-[300px] lg:flex-[0.28] lg:items-start lg:text-left mt-9 lg:mt-4">
-            <div className="flex w-full flex-col items-center gap-2.5 lg:items-start">
-              <div className="h-14 w-14 rounded-full bg-gray-200 animate-pulse"></div>
-              <div className="h-4 w-40 bg-gray-200 animate-pulse rounded"></div>
-            </div>
-            <div className="h-10 w-full bg-gray-200 animate-pulse rounded"></div>
-            <div className="h-16 w-full bg-gray-200 animate-pulse rounded"></div>
+      <section className="relative w-full overflow-hidden rounded-2xl bg-background md:pt-8 md:mt-6">
+        <div className="flex w-full flex-col gap-6 px-4 py-6 sm:px-6">
+          <div className="max-w-sm p-4 rounded-2xl border border-border bg-surface/50 animate-pulse">
+            <div className="h-6 w-48 bg-gray-300 rounded mb-3" />
+            <div className="h-4 w-full max-w-md bg-gray-200 rounded mb-2" />
+            <div className="h-4 w-full max-w-sm bg-gray-200 rounded" />
           </div>
         </div>
       </section>
@@ -286,104 +191,63 @@ const Hero = () => {
   // Fallback to default data if needed
   const displaySummary = summary || {
     name: "Dr. Kalyani Sadanala, PT",
-    bio: "Dedicated to holistic healing and patient-centered care, Dr. Chelli brings over 10 years of experience in musculoskeletal and neurorehabilitation. Passionate about empowering patients to achieve their best mobility and quality of life.",
-    profileImage: "https://i.pravatar.cc/150?u=drchelli"
+    bio: "Dedicated",
+    profileImage: "src\assets\images\education-bg.jpg"
   };
 
   return (
-    <section className="relative w-full overflow-hidden rounded-3xl bg-background md:pt-6 md:mt-4">
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute top-10 left-4 h-48 w-48 rounded-full bg-primary/10 blur-3xl animate-pulse-glow" />
-        <div className="absolute bottom-6 right-4 h-56 w-56 rounded-full bg-secondary/10 blur-3xl animate-pulse-glow" style={{ animationDelay: "1s" }} />
-        <div className="absolute left-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent/5 blur-3xl animate-pulse-glow" style={{ animationDelay: "2s" }} />
-      </div>
-
-      <div className="relative z-10 flex w-full flex-col gap-3 px-3 py-4 sm:px-4 md:min-h-[360px] lg:min-h-[420px] lg:flex-row lg:items-center lg:gap-6 lg:px-5 xl:px-6">
-        {/* Profile summary column (left) */}
-        <div className="flex w-full min-w-0 flex-col items-center gap-3 text-center sm:gap-4 lg:max-w-[300px] lg:flex-[0.28] lg:items-start lg:text-left mt-9 lg:mt-4">
-          <div className="flex w-full flex-col items-center gap-2.5 lg:items-start">
-            <img
-              src={displaySummary.profileImage || "https://i.pravatar.cc/150?u=drchelli"}
-              alt={displaySummary.name}
-              className="h-14 w-14 rounded-full border-3 border-primary/20 object-cover shadow-lg sm:h-16 sm:w-16"
-            />
-            <h1 className="font-heading text-lg font-bold gradient-text neon-text sm:text-xl lg:text-lg">
+    <section className="relative w-full overflow-hidden rounded-2xl bg-background md:pt-8 md:mt-6">
+      <div className="relative z-10 flex w-full flex-col gap-6 px-4 py-6 sm:px-6 md:min-h-[340px] lg:flex-row lg:items-center lg:gap-10 lg:px-8">
+        {/* Profile — left 35% with bg image, glass box at bottom */}
+        <div
+          className="relative w-full flex flex-col items-start justify-end lg:flex-[0.35] lg:min-w-0 lg:rounded-r-2xl overflow-hidden lg:min-h-[340px] lg:pt-6 lg:pb-0"
+          style={{
+            backgroundImage: `url(${EducationBg})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center'
+          }}
+        >
+          <div className="absolute inset-0 z-0 bg-background/10" />
+          {/* Glass box at bottom left — less transparent */}
+          <div className="relative z-10 w-full max-w-[90%] p-3 rounded-2xl border border-border bg-white/50 dark:bg-white/30 backdrop-blur-md shadow-lg lg:max-w-[260px] lg:ml-0 lg:px-4">
+            <h1 className="hero-glass-name font-heading text-sm font-extrabold tracking-tight sm:text-base">
               {displaySummary.name}
             </h1>
-          </div>
-
-          <p className="mx-auto max-w-xl text-[10px] leading-relaxed text-text-secondary sm:text-xs">
-            {displaySummary.bio}
-          </p>
-
-          <div className="flex flex-col items-center gap-1.5 text-[10px] font-semibold text-primary/85 lg:items-start">
-            <span className="flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-0.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+            <p className="hero-glass-bio mt-1 text-[10px] leading-relaxed max-w-full sm:text-xs">
+              {displaySummary.bio}
+            </p>
+            <p className="hero-glass-degree mt-0.5 text-[9px] font-bold uppercase tracking-wider">
               {highestEducation.degree}
-            </span>
-            <span className="flex items-center gap-1.5 rounded-full bg-secondary/10 px-2.5 py-0.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-secondary animate-pulse" />
-              {highestEducation.institute}
-            </span>
-            {education.length > 1 && (
-              <span className="flex items-center gap-1.5 rounded-full bg-accent/10 px-2.5 py-0.5 text-[9px]">
-                <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
-                +{education.length - 1} more qualification(s)
-              </span>
-            )}
-          </div>
-
-          <div className="flex w-full flex-col gap-1.5 sm:flex-row sm:justify-center lg:flex-col lg:items-start">
+            </p>
             <button
-              className="glass-button pulse-glow px-3 py-1 text-[10px] lg:w-full"
+              type="button"
+              className="mt-2 py-1 px-2.5 text-[10px] cursor-pointer font-semibold rounded-md border border-primary text-primary hover:bg-primary/10 dark:hover:bg-primary/20 transition-colors"
               onClick={() => {
                 window.open(
                   "https://mail.google.com/mail/?view=cm&fs=1&to=example@gmail.com&su=Subject-%20Enquiry%20about%20Physiotherapy%20Services%20and%20Appointments&body=Content-%20I%20would%20like%20to%20contact%20you%20regarding%20your%20physiotherapy%20services.",
                   "_blank"
                 );
                 const expSection = document.querySelector("#experience");
-                if (expSection) {
-                  expSection.scrollIntoView({ behavior: "smooth" });
-                }
-                if (window.setActiveSection) {
-                  window.setActiveSection("#experience");
-                }
+                if (expSection) expSection.scrollIntoView({ behavior: "smooth" });
+                if (window.setActiveSection) window.setActiveSection("#experience");
               }}
             >
-              <span className="flex items-center justify-center gap-2">
-                <svg className="h-3.5 w-3.5 -scale-x-100" fill="currentColor" viewBox="0 0 20 20">
-                  <path
-                    fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.293l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                Know More
-              </span>
-            </button>
-            <button className="btn-success px-4 py-1.5 text-[10px] lg:w-full">
-              <span className="flex items-center justify-center gap-2">
-                <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-                  <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-                </svg>
-                Contact Me
-              </span>
+              Contact Me
             </button>
           </div>
         </div>
 
-        {/* Patient gallery column (right) */}
-        <div className="relative flex w-full min-w-0 flex-1 lg:mt-4 flex-col overflow-hidden rounded-3xl border border-border bg-surface/90 shadow-xl min-h-[320px] max-h-[340px] sm:min-h-[380px] sm:max-h-[400px] md:min-h-[440px] md:max-h-[460px] lg:flex-1 lg:min-h-[520px] lg:max-h-[540px] lg:self-stretch">
+        {/* Patient gallery — right 75% */}
+        <div className="relative flex min-w-0 flex-1 flex-col overflow-hidden rounded-2xl border border-border bg-surface/95 shadow-lg min-h-[300px] sm:min-h-[360px] lg:flex-[0.75] lg:min-w-0 lg:min-h-[420px] lg:self-stretch">
           <div
             ref={scrollContainerRef}
-            className="scrollbar-hide flex h-full min-w-0 gap-1.5 overflow-x-auto overflow-y-hidden overscroll-x-contain px-1 py-1.5 snap-x snap-mandatory sm:px-1.5 sm:py-2 md:gap-2 md:px-2"
+            className="scrollbar-hide flex h-full min-w-0 gap-3 overflow-x-auto overflow-y-hidden overscroll-x-contain px-2 py-2 snap-x snap-mandatory sm:px-3 md:gap-4"
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
             {patientsData.map((patient, index) => (
               <div
                 key={patient.id}
-                className={`snap-center flex-shrink-0 basis-[85vw] max-w-full sm:basis-[320px] md:basis-[340px] lg:basis-[380px] xl:basis-[420px] ${isCenterCard(index) ? "center-card" : ""}`}
+                className={`snap-center flex-shrink-0 basis-[85vw] max-w-full sm:basis-[280px] md:basis-[300px] lg:basis-[280px] ${isCenterCard(index) ? "center-card" : ""}`}
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
               >

@@ -1,35 +1,44 @@
 import React, { useState, useEffect } from "react";
-import { fetchCollection } from "../firebase/firebaseUtils";
 import EducationBg from "../assets/images/education-bg.jpg"; // Import the background image
 
 const Education = () => {
+  const fallbackEducation = [
+    {
+      degree: "Doctor of Physical Therapy (DPT)",
+      institute: "All India Institute of Medical Sciences",
+      duration: "2015 - 2017",
+      description: "Specialized in neuro and musculoskeletal rehabilitation.",
+      id: "fallback-1"
+    },
+    {
+      degree: "Bachelor of Physiotherapy (BPT)",
+      institute: "Delhi University",
+      duration: "2010 - 2015",
+      description: "Graduated with distinction, focusing on evidence-based practice.",
+      id: "fallback-2"
+    }
+  ];
+
   const [education, setEducation] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadEducation = async () => {
       try {
-        const data = await fetchCollection('education');
-        setEducation(data);
+        const res = await fetch("/data/education.json");
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data) && data.length > 0) {
+            setEducation(data);
+          } else {
+            setEducation(fallbackEducation);
+          }
+        } else {
+          setEducation(fallbackEducation);
+        }
       } catch (error) {
         console.error('Error loading education data:', error);
-        // Fallback to static data if Firebase fails
-        setEducation([
-          {
-            degree: "Doctor of Physical Therapy (DPT)",
-            institute: "All India Institute of Medical Sciences",
-            duration: "2015 - 2017",
-            description: "Specialized in neuro and musculoskeletal rehabilitation.",
-            id: "fallback-1"
-          },
-          {
-            degree: "Bachelor of Physiotherapy (BPT)",
-            institute: "Delhi University",
-            duration: "2010 - 2015",
-            description: "Graduated with distinction, focusing on evidence-based practice.",
-            id: "fallback-2"
-          }
-        ]);
+        setEducation(fallbackEducation);
       } finally {
         setLoading(false);
       }

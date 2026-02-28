@@ -1,36 +1,45 @@
 import React, { useState, useEffect } from "react";
-import { fetchCollection } from "../firebase/firebaseUtils";
 
 const Experience = () => {
+  const fallbackExperience = [
+    {
+      role: "Senior Physiotherapist",
+      location: "Healing Hands Clinic, Mumbai",
+      years: "2019 - Present",
+      description: "Lead therapist for orthopedic and sports injury cases. Developed patient education programs and supervised junior staff.",
+      image: "exp1.jpg",
+      id: "fallback-1"
+    },
+    {
+      role: "Physiotherapist",
+      location: "Sunrise Hospital, Delhi",
+      years: "2017 - 2019",
+      description: "Managed post-surgical rehabilitation and outpatient therapy. Specialized in manual therapy techniques.",
+      image: "exp2.jpg",
+      id: "fallback-2"
+    }
+  ];
+
   const [experience, setExperience] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadExperience = async () => {
       try {
-        const data = await fetchCollection('experience');
-        setExperience(data);
+        const res = await fetch("/data/experience.json");
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data) && data.length > 0) {
+            setExperience(data);
+          } else {
+            setExperience(fallbackExperience);
+          }
+        } else {
+          setExperience(fallbackExperience);
+        }
       } catch (error) {
         console.error('Error loading experience data:', error);
-        // Fallback to static data if Firebase fails
-        setExperience([
-          {
-            role: "Senior Physiotherapist",
-            location: "Healing Hands Clinic, Mumbai",
-            years: "2019 - Present",
-            description: "Lead therapist for orthopedic and sports injury cases. Developed patient education programs and supervised junior staff.",
-            image: "exp1.jpg",
-            id: "fallback-1"
-          },
-          {
-            role: "Physiotherapist",
-            location: "Sunrise Hospital, Delhi",
-            years: "2017 - 2019",
-            description: "Managed post-surgical rehabilitation and outpatient therapy. Specialized in manual therapy techniques.",
-            image: "exp2.jpg",
-            id: "fallback-2"
-          }
-        ]);
+        setExperience(fallbackExperience);
       } finally {
         setLoading(false);
       }

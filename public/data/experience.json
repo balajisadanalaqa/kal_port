@@ -1,0 +1,18 @@
+[
+  {
+    "id": "exp-1",
+    "role": "Senior Physiotherapist",
+    "location": "Healing Hands Clinic, Mumbai",
+    "years": "2019 - Present",
+    "description": "Lead therapist for orthopedic and sports injury cases. Developed patient education programs and supervised junior staff.",
+    "image": "/media/experience/exp1.jpg"
+  },
+  {
+    "id": "exp-2",
+    "role": "Physiotherapist",
+    "location": "Sunrise Hospital, Delhi",
+    "years": "2017 - 2019",
+    "description": "Managed post-surgical rehabilitation and outpatient therapy. Specialized in manual therapy techniques.",
+    "image": "/media/experience/exp2.jpg"
+  }
+]

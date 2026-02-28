@@ -1,43 +1,40 @@
 import React, { useState, useEffect } from "react";
 import { FaLinkedin, FaInstagram, FaEnvelope, FaPhone } from "react-icons/fa";
-import { fetchCollection } from "../firebase/firebaseUtils";
 
 const Footer = () => {
-  const [summary, setSummary] = useState({
+  const fallbackSummary = {
     name: "Dr. Kalyani Sadanala, PT",
     profileLinks: {
       linkedin: "https://linkedin.com/in/priyachelli",
       instagram: "https://instagram.com/drpriyachelli",
       email: "priya.chelli@email.com"
     }
-  });
+  };
+
+  const [summary, setSummary] = useState(fallbackSummary);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadSummaryData = async () => {
       try {
-        const aboutData = await fetchCollection('about');
-        if (aboutData.length > 0) {
+        const res = await fetch("/data/about.json");
+        if (res.ok) {
+          const aboutData = await res.json();
           setSummary({
-            name: aboutData[0].name || "Dr. Kalyani Sadanala, PT",
+            name: aboutData.name || fallbackSummary.name,
             profileLinks: {
-              linkedin: aboutData[0].profileLinks?.linkedin || "https://linkedin.com/in/priyachelli",
-              instagram: aboutData[0].profileLinks?.instagram || "https://instagram.com/drpriyachelli",
-              email: aboutData[0].profileLinks?.email || "priya.chelli@email.com"
+              linkedin: aboutData.profileLinks?.linkedin || fallbackSummary.profileLinks.linkedin,
+              instagram: aboutData.profileLinks?.instagram || fallbackSummary.profileLinks.instagram,
+              email: aboutData.profileLinks?.email || fallbackSummary.profileLinks.email
             }
           });
+        } else {
+          setSummary(fallbackSummary);
         }
       } catch (error) {
         console.error('Error loading summary data:', error);
         // Fallback to default data
-        setSummary({
-          name: "Dr. Kalyani Sadanala, PT",
-          profileLinks: {
-            linkedin: "https://linkedin.com/in/priyachelli",
-            instagram: "https://instagram.com/drpriyachelli",
-            email: "priya.chelli@email.com"
-          }
-        });
+        setSummary(fallbackSummary);
       } finally {
         setLoading(false);
       }

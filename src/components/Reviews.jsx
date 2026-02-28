@@ -1,37 +1,46 @@
 import React, { useState, useEffect } from "react";
-import { fetchCollection } from "../firebase/firebaseUtils";
 
 const Reviews = () => {
+  const fallbackReviews = [
+    {
+      id: "fallback-1",
+      name: "Amit S.",
+      treatment: "ACL Rehabilitation",
+      feedback: "Dr. Chelli's care and encouragement made my recovery smooth and fast. Highly recommend!",
+      rating: 5,
+      photo: "review1.jpg",
+      beforeAfter: ["before1.jpg", "after1.jpg"]
+    },
+    {
+      id: "fallback-2",
+      name: "Meera K.",
+      treatment: "Frozen Shoulder",
+      feedback: "Very patient and knowledgeable. My pain reduced drastically in just a few sessions.",
+      rating: 5,
+      photo: "review2.jpg"
+    }
+  ];
+
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadReviews = async () => {
       try {
-        const data = await fetchCollection('reviews');
-        setReviews(data);
+        const res = await fetch("/data/reviews.json");
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data) && data.length > 0) {
+            setReviews(data);
+          } else {
+            setReviews(fallbackReviews);
+          }
+        } else {
+          setReviews(fallbackReviews);
+        }
       } catch (error) {
         console.error('Error loading reviews data:', error);
-        // Fallback to static data if Firebase fails
-        setReviews([
-          {
-            name: "Amit S.",
-            treatment: "ACL Rehabilitation",
-            feedback: "Dr. Chelli's care and encouragement made my recovery smooth and fast. Highly recommend!",
-            rating: 5,
-            photo: "review1.jpg",
-            beforeAfter: ["before1.jpg", "after1.jpg"],
-            id: "fallback-1"
-          },
-          {
-            name: "Meera K.",
-            treatment: "Frozen Shoulder",
-            feedback: "Very patient and knowledgeable. My pain reduced drastically in just a few sessions.",
-            rating: 5,
-            photo: "review2.jpg",
-            id: "fallback-2"
-          }
-        ]);
+        setReviews(fallbackReviews);
       } finally {
         setLoading(false);
       }

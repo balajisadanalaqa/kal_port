@@ -94,18 +94,18 @@ const PatientCaseCarousel = ({ patient, onViewDetails, isCenterCard = false }) =
         </div>
       </div>
 
-      {/* View Details Button */}
+      {/* Gallery button - opens full gallery modal */}
       <div className="absolute bottom-2 sm:bottom-4 left-0 right-0 z-20 px-2 sm:px-4">
         <button
           onClick={() => onViewDetails(patient)}
           className="w-full glass-button pulse-glow text-[10px] py-1"
+          aria-label="Open gallery"
         >
           <span className="flex items-center justify-center gap-1">
-            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-              <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
             </svg>
-            View Details
+            Gallery
           </span>
         </button>
       </div>

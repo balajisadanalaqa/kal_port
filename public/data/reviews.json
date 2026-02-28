@@ -1,0 +1,22 @@
+[
+  {
+    "id": "rev-1",
+    "name": "Amit S.",
+    "treatment": "ACL Rehabilitation",
+    "feedback": "Dr. Chelli's care and encouragement made my recovery smooth and fast. Highly recommend!",
+    "rating": 5,
+    "photo": "/media/reviews/review1.jpg",
+    "beforeAfter": [
+      "/media/reviews/before1.jpg",
+      "/media/reviews/after1.jpg"
+    ]
+  },
+  {
+    "id": "rev-2",
+    "name": "Meera K.",
+    "treatment": "Frozen Shoulder",
+    "feedback": "Very patient and knowledgeable. My pain reduced drastically in just a few sessions.",
+    "rating": 5,
+    "photo": "/media/reviews/review2.jpg"
+  }
+]

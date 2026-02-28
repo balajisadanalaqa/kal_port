@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import { summary } from "../data/summaryData";
 import ThemeSwitcher from "./ThemeSwitcher";
 import { FaLinkedin, FaInstagram, FaEnvelope, FaPhone } from "react-icons/fa";
 
@@ -13,6 +12,14 @@ const navItems = [
 
 const NavBar = () => {
   const [activeSection, setActiveSection] = useState("#home");
+  const [shortName, setShortName] = useState("K S");
+
+  useEffect(() => {
+    fetch("/data/about.json")
+      .then((res) => res.ok ? res.json() : null)
+      .then((data) => data?.short_name && setShortName(data.short_name))
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     let ticking = false;
@@ -70,7 +77,7 @@ const NavBar = () => {
       >
         <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6">
           <div className="lexend-giga-nav-bold  font-bold text-xl gradient-text neon-text align-left">
-            {summary.short_name}
+            {shortName}
           </div>
 
           <ul className="flex gap-8 font-medium text-text lexend-giga-nav">
