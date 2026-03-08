@@ -107,6 +107,17 @@ const Hero = () => {
     loadAllData();
   }, []);
 
+  // Preload all patient videos once data is loaded (reduces modal open lag)
+  const videoUrlsToPreload = React.useMemo(() => {
+    const urls = [];
+    patientsData.forEach((p) => {
+      (p.videos || []).forEach((v) => {
+        if (v?.url) urls.push(v.url);
+      });
+    });
+    return [...new Set(urls)];
+  }, [patientsData]);
+
   // Get highest education
   const highestEducation = education[0] || { degree: "Doctor of Physical Therapy (DPT)", institute: "All India Institute of Medical Sciences" }; // DPT is the highest degree
 
@@ -197,6 +208,14 @@ const Hero = () => {
 
   return (
     <section className="relative w-full overflow-hidden rounded-2xl bg-background md:pt-8 md:mt-6">
+      {/* Hidden video preloads - reduces modal open lag */}
+      {videoUrlsToPreload.length > 0 && (
+        <div className="absolute w-0 h-0 overflow-hidden opacity-0 pointer-events-none" aria-hidden>
+          {videoUrlsToPreload.map((url) => (
+            <video key={url} src={url} preload="auto" muted playsInline />
+          ))}
+        </div>
+      )}
       <div className="relative z-10 flex w-full flex-col gap-6 px-4 py-6 sm:px-6 md:min-h-[340px] lg:flex-row lg:items-center lg:gap-10 lg:px-8">
         {/* Profile — left 35% with bg image, glass box at bottom */}
         <div

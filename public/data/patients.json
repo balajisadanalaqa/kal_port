@@ -31,9 +31,9 @@
   {
     "id": 2,
     "patientName": "Michael Chen",
-    "condition": "Knee Rehabilitation",
-    "treatment": "Post-Surgery Recovery & Strength Training",
-    "recoveryPeriod": "12-16 weeks",
+    "condition": "Post right FTP decompression craniectomy with hematoma causing weakness and impaired mobility",
+    "treatment": "strengthening, balance training and gait rehabilitation",
+    "recoveryPeriod": "12-16 weeks/Able to walk with stick support at discharge",
     "movementsDone": [
       "Quad sets",
       "Straight leg raises",
@@ -42,7 +42,6 @@
     ],
     "boxColor": "#10B981",
     "images": [
-
     ],
     "videos": [
       {

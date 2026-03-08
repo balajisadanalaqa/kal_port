@@ -122,7 +122,7 @@ const PatientDetailsModal = ({ patient, onClose, onNextPatient, onPrevPatient })
               </h3>
             </div>
             <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-2 sm:p-3">
-              <div className="grid grid-cols-2 gap-2 sm:gap-3">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4">
                   {allMedia.map((media, index) => {
                     const isVid = isVideo(media.url);
                     const key = `${media.id}-${index}`;
@@ -130,7 +130,7 @@ const PatientDetailsModal = ({ patient, onClose, onNextPatient, onPrevPatient })
                       <button
                         key={key}
                         type="button"
-                        className="relative aspect-square min-h-[140px] sm:min-h-[200px] rounded-xl overflow-hidden bg-surface shadow-md hover:shadow-xl hover:scale-[1.02] active:scale-[0.99] transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 group"
+                        className="relative aspect-square min-h-[200px] sm:min-h-[260px] md:min-h-[280px] rounded-xl overflow-hidden bg-surface shadow-md hover:shadow-xl hover:scale-[1.02] active:scale-[0.99] transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 group"
                         onClick={() => openLightbox(media, index)}
                       >
                         {isVid ? (
@@ -216,6 +216,7 @@ const PatientDetailsModal = ({ patient, onClose, onNextPatient, onPrevPatient })
                     controls
                     autoPlay
                     playsInline
+                    preload="auto"
                     onError={() => {}}
                   />
                 ) : (
