@@ -5,8 +5,84 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite + React</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+        background: #ffffff;
+        color: #2d3436;
+      }
+
+      #app-boot-splash {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 2.5rem 1rem 0;
+        background: inherit;
+      }
+
+      .boot-card {
+        width: min(980px, 96vw);
+        border-radius: 16px;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        background: rgba(248, 249, 250, 0.8);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        padding: 1rem;
+      }
+
+      .boot-line {
+        height: 12px;
+        border-radius: 8px;
+        background: linear-gradient(90deg, #dbe2ea 25%, #eef2f7 45%, #dbe2ea 65%);
+        background-size: 300% 100%;
+        animation: bootShimmer 1.2s infinite;
+      }
+
+      .boot-line + .boot-line {
+        margin-top: 0.6rem;
+      }
+
+      @keyframes bootShimmer {
+        0% {
+          background-position: 100% 0;
+        }
+        100% {
+          background-position: 0 0;
+        }
+      }
+
+      @media (prefers-color-scheme: dark) {
+        html,
+        body {
+          background: #0a0a0f;
+          color: #ffffff;
+        }
+
+        .boot-card {
+          border-color: rgba(255, 255, 255, 0.15);
+          background: rgba(26, 26, 46, 0.7);
+        }
+
+        .boot-line {
+          background: linear-gradient(90deg, #2e3342 25%, #3b4050 45%, #2e3342 65%);
+          background-size: 300% 100%;
+        }
+      }
+    </style>
   </head>
   <body>
+    <div id="app-boot-splash" aria-hidden="true">
+      <div class="boot-card">
+        <div class="boot-line" style="width: 42%"></div>
+        <div class="boot-line" style="width: 78%"></div>
+        <div class="boot-line" style="width: 66%"></div>
+      </div>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

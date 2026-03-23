@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 
 const Reviews = () => {
+  const reviewsScrollRef = useRef(null);
   const fallbackReviews = [
     {
       id: "fallback-1",
@@ -49,6 +50,101 @@ const Reviews = () => {
     loadReviews();
   }, []);
 
+  // Below md: smooth nudges so horizontal scroll is obvious; pause on touch
+  useLayoutEffect(() => {
+    const el = reviewsScrollRef.current;
+    if (!el || reviews.length < 2) return;
+
+    const mq = window.matchMedia("(max-width: 767px)");
+    let intervalId = null;
+    let cancelled = false;
+    let userPaused = false;
+    let resumeTimer = null;
+    let firstHintTimer = null;
+
+    const clearResume = () => {
+      if (resumeTimer) {
+        clearTimeout(resumeTimer);
+        resumeTimer = null;
+      }
+    };
+
+    const pauseFromUser = () => {
+      userPaused = true;
+      clearResume();
+      resumeTimer = setTimeout(() => {
+        userPaused = false;
+        resumeTimer = null;
+      }, 5000);
+    };
+
+    const nudge = () => {
+      if (cancelled || !mq.matches || userPaused) return;
+      const max = el.scrollWidth - el.clientWidth;
+      if (max <= 12) return;
+      const remaining = max - el.scrollLeft;
+      if (remaining <= 32) {
+        el.scrollTo({ left: 0, behavior: "smooth" });
+      } else {
+        const step = Math.min(
+          160,
+          Math.max(72, Math.round(el.clientWidth * 0.28))
+        );
+        el.scrollBy({ left: step, behavior: "smooth" });
+      }
+    };
+
+    const clearTimers = () => {
+      if (intervalId != null) {
+        clearInterval(intervalId);
+        intervalId = null;
+      }
+      if (firstHintTimer != null) {
+        clearTimeout(firstHintTimer);
+        firstHintTimer = null;
+      }
+    };
+
+    const startIfNeeded = () => {
+      if (cancelled) return;
+      const max = el.scrollWidth - el.clientWidth;
+      if (max <= 12 || !mq.matches) {
+        clearTimers();
+        return;
+      }
+      if (intervalId != null) return;
+      firstHintTimer = window.setTimeout(() => {
+        if (!cancelled && mq.matches) nudge();
+      }, 900);
+      intervalId = window.setInterval(nudge, 3200);
+    };
+
+    el.addEventListener("touchstart", pauseFromUser, { passive: true });
+    el.addEventListener("touchmove", pauseFromUser, { passive: true });
+    el.addEventListener("pointerdown", pauseFromUser);
+
+    const ro = new ResizeObserver(() => startIfNeeded());
+    ro.observe(el);
+    startIfNeeded();
+
+    const onMqChange = () => {
+      if (!mq.matches) clearTimers();
+      else startIfNeeded();
+    };
+    mq.addEventListener("change", onMqChange);
+
+    return () => {
+      cancelled = true;
+      clearTimers();
+      clearResume();
+      ro.disconnect();
+      mq.removeEventListener("change", onMqChange);
+      el.removeEventListener("touchstart", pauseFromUser);
+      el.removeEventListener("touchmove", pauseFromUser);
+      el.removeEventListener("pointerdown", pauseFromUser);
+    };
+  }, [reviews.length]);
+
   if (loading) {
     return (
       <section id="reviews" className="py-12 bg-background relative overflow-hidden">
@@ -83,14 +179,20 @@ const Reviews = () => {
             <p className="text-[10px] sm:text-base text-text-secondary max-w-2xl mx-auto">
               What my patients say about their experience and treatment
             </p>
+            <p className="mt-2 text-[10px] text-text-secondary/85 md:hidden">
+              Swipe sideways for more reviews
+            </p>
           </div>
 
           {/* Reviews Section - Horizontal Scrolling */}
-          <div className="max-w-6xl mx-auto">
-            <div className="flex flex-nowrap gap-3 sm:gap-6 overflow-x-auto pb-4 scrollbar-hide">
+          <div className="max-w-6xl mx-auto min-w-0">
+            <div
+              ref={reviewsScrollRef}
+              className="reviews-scroll flex min-w-0 flex-nowrap gap-3 overflow-x-auto overflow-y-hidden overscroll-x-contain pb-4 sm:gap-6"
+            >
               {reviews.map((review, idx) => (
-                <div key={review.id || idx} className="flex-shrink-0 w-[300px] sm:w-[320px] lg:w-[350px] group" data-aos="fade-right" data-aos-delay={idx * 50} data-aos-duration="600">
-                  <div className="crypto-card h-full hover:scale-[1.03] transition-all duration-300 p-2 sm:p-3 relative z-10">
+                <div key={review.id || idx} className="group w-[min(300px,calc(100vw-2.5rem))] flex-shrink-0 sm:w-[320px] lg:w-[350px]" data-aos="fade-right" data-aos-delay={idx * 50} data-aos-duration="600">
+                  <div className="crypto-card h-full hover:scale-[1.03] transition-all duration-300 p-2 sm:p-3 relative z-10 mt-2 ml-2">
                     {/* Review Header */}
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-2 sm:gap-4">

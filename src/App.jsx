@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { Routes, Route } from "react-router-dom";
+import React, { useEffect, useLayoutEffect } from "react";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import NavBar from "./components/NavBar";
 import MobileNavBar from "./components/MobileNavBar";
 import Hero from "./components/Hero";
@@ -14,6 +14,24 @@ import "aos/dist/aos.css";
 import "./styles.css";
 
 function App() {
+  const navigate = useNavigate();
+
+  // Must use navigate(), not history.replaceState — otherwise the address bar
+  // updates but React Router (and useSearchParams in Hero) still sees ?patient= / ?media=.
+  useLayoutEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const { pathname, search, hash } = window.location;
+    const params = new URLSearchParams(search);
+    const hasModalParams = params.has("patient") || params.has("media");
+    const shouldNormalizeToHome =
+      pathname !== "/" || hasModalParams || hash === "" || hash === "#";
+
+    if (shouldNormalizeToHome) {
+      navigate({ pathname: "/", search: "", hash: "#home" }, { replace: true });
+    }
+  }, [navigate]);
+
   useEffect(() => {
     AOS.init({ duration: 800, once: true, offset: 50 });
 
@@ -45,7 +63,7 @@ function App() {
         <Route path="/" element={
           <div className="flex min-h-screen flex-col bg-background font-body text-text overflow-x-hidden">
             <NavBar />
-            <main className="flex-1 min-w-0 overflow-x-hidden pt-4 md:pb-16 space-y-16">
+            <main className="flex-1 min-w-0 overflow-x-hidden pt-4 md:pb-16 space-y-8 md:space-y-16">
               <section id="home" className="w-full px-3 sm:px-6 lg:px-0 xl:px-4">
                 <Hero />
               </section>

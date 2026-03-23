@@ -18,5 +18,21 @@
     "feedback": "Very patient and knowledgeable. My pain reduced drastically in just a few sessions.",
     "rating": 5,
     "photo": "/media/reviews/review2.jpg"
+  },
+  {
+    "id": "rev-3",
+    "name": "Meera K.",
+    "treatment": "Frozen Shoulder",
+    "feedback": "Very patient and knowledgeable. My pain reduced drastically in just a few sessions.",
+    "rating": 5,
+    "photo": "/media/reviews/review2.jpg"
+  },
+  {
+    "id": "rev-4",
+    "name": "Meera K.",
+    "treatment": "Frozen Shoulder",
+    "feedback": "Very patient and knowledgeable. My pain reduced drastically in just a few sessions.",
+    "rating": 5,
+    "photo": "/media/reviews/review2.jpg"
   }
 ]

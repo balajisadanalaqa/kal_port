@@ -30,7 +30,7 @@
   },
   {
     "id": 2,
-    "patientName": "Michael Chen",
+    "patientName": "69/Female",
     "condition": "Post right FTP decompression craniectomy with hematoma causing weakness and impaired mobility",
     "treatment": "strengthening, balance training and gait rehabilitation",
     "recoveryPeriod": "12-16 weeks/Able to walk with stick support at discharge",
@@ -42,16 +42,51 @@
     ],
     "boxColor": "#10B981",
     "images": [
+      {
+        "id": 1,
+        "url": "/media/patients/michael_chen/images/IMG_20230204_164712.jpg",
+        "description": "performing squats"
+      },
+      {
+        "id": 2,
+        "url": "/media/patients/michael_chen/images/IMG_20230204_164714.jpg",
+        "description": ""
+      },
+      {
+        "id": 3,
+        "url": "/media/patients/michael_chen/images/IMG_20230310_162051.jpg",
+        "description": ""
+      },
+      {
+        "id": 4,
+        "url": "/media/patients/michael_chen/images/IMG-20230310-WA0014.jpg",
+        "description": ""
+      }
     ],
     "videos": [
       {
         "id": 1,
-        "url": "public/media/patients/michael_chen/videos/VID_20230128_104843.mp4",
+        "url": "public/media/patients/michael_chen/videos/no-coridantion.mp4",
         "description": "Mini squat technique with proper knee alignment"
       },
       {
         "id": 2,
-        "url": "public/media/patients/michael_chen/videos/VID_20230128_104857.mp4",
+        "url": "public/media/patients/michael_chen/videos/movemtents done.mp4",
+        "description": "Balance exercises on unstable surfaces"
+      },
+      {
+        "id": 3,
+        "url": "public/media/patients/michael_chen/videos/independent walking.mp4",
+        "description": "Mini squat technique with proper knee alignment"
+      },
+      {
+        "id": 4,
+        "url": "public/media/patients/michael_chen/videos/independent situps.mp4",
+        "description": "Balance exercises on unstable surfaces"
+      },
+      {
+        "id": 5,
+        "url": "public/media/patients/michael_chen/videos/cordination.mp4",
         "description": "Balance exercises on unstable surfaces"
       }
     ]
@@ -70,68 +105,10 @@
     ],
     "boxColor": "#F59E0B",
     "images": [
-      {
-        "id": 1,
-        "url": "/media/patients/emily_rodriguez/images/IMG-20230310-WA0014.jpg",
-        "description": ""
-      },
-      {
-        "id": 2,
-        "url": "/media/patients/emily_rodriguez/images/IMG_20230204_164712.jpg",
-        "description": ""
-      },
-      {
-        "id": 3,
-        "url": "/media/patients/emily_rodriguez/images/IMG_20230204_164714.jpg",
-        "description": ""
-      },
-      {
-        "id": 4,
-        "url": "/media/patients/emily_rodriguez/images/IMG_20230310_162051.jpg",
-        "description": ""
-      }
+
     ],
     "videos": [
-      {
-        "id": 1,
-        "url": "/media/patients/emily_rodriguez/videos/VID-20230225-WA0007.mp4",
-        "description": ""
-      },
-      {
-        "id": 2,
-        "url": "/media/patients/emily_rodriguez/videos/VID-20230310-WA0032.mp4",
-        "description": ""
-      },
-      {
-        "id": 3,
-        "url": "/media/patients/emily_rodriguez/videos/VID_20230127_132427.mp4",
-        "description": ""
-      },
-      {
-        "id": 4,
-        "url": "/media/patients/emily_rodriguez/videos/VID_20230127_132553.mp4",
-        "description": ""
-      },
-      {
-        "id": 5,
-        "url": "/media/patients/emily_rodriguez/videos/VID_20230127_155850.mp4",
-        "description": ""
-      },
-      {
-        "id": 6,
-        "url": "/media/patients/emily_rodriguez/videos/VID_20230127_160429.mp4",
-        "description": ""
-      },
-      {
-        "id": 7,
-        "url": "/media/patients/emily_rodriguez/videos/VID_20230127_160500.mp4",
-        "description": ""
-      },
-      {
-        "id": 8,
-        "url": "/media/patients/emily_rodriguez/videos/VID_20230127_160607.mp4",
-        "description": ""
-      }
+
     ]
   },
   {
@@ -148,28 +125,10 @@
     ],
     "boxColor": "#EF4444",
     "images": [
-      {
-        "id": 1,
-        "url": "/media/patients/david_thompson/images/IMG-20230131-WA0015.jpg",
-        "description": ""
-      },
-      {
-        "id": 2,
-        "url": "/media/patients/david_thompson/images/IMG_20230227_104134.jpg",
-        "description": ""
-      },
-      {
-        "id": 3,
-        "url": "/media/patients/david_thompson/images/IMG_20230306_110243.jpg",
-        "description": ""
-      }
+
     ],
     "videos": [
-      {
-        "id": 1,
-        "url": "/media/patients/david_thompson/videos/VID_20230127_103701.mp4",
-        "description": ""
-      }
+
     ]
   }
 

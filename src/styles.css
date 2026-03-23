@@ -6,6 +6,9 @@
 
 @import "tailwindcss";
 
+/* Theme toggle adds `.dark` on html/body — make Tailwind `dark:` utilities follow it (v4 default can miss this). */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   /* Light Theme Colors */
   --color-primary-light: #007BFF;
@@ -718,6 +721,115 @@ video {
   scrollbar-width: none;
 }
 
+/* Hero: photo anchor — mobile shifts up so face isn’t cropped; desktop slightly lower */
+.hero-unified-bg {
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center 50%;
+}
+
+/* Mobile portrait: push background up so face shows; about+carousel stay at bottom in Hero */
+@media (max-width: 767px) and (orientation: portrait) {
+  .hero-unified-bg {
+    background-position: center -18%;
+  }
+
+  /* Pin about + seam + carousel to bottom (Tailwind portrait: may not apply; this always wins) */
+  .hero-mobile-landscape-frame {
+    justify-content: flex-end;
+    min-height: min(98svh, 1280px);
+    padding-bottom: 0 !important;
+  }
+
+  .hero-portrait-bottom-spacer {
+    display: block !important;
+    flex: 1 1 0;
+    min-height: 0;
+    width: 100%;
+  }
+
+  .hero-mobile-landscape-about {
+    margin-top: 0 !important;
+  }
+
+  .hero-mobile-landscape-carousel-wrap {
+    min-height: min(34vh, 240px) !important;
+    max-height: min(48vh, 360px) !important;
+    margin-bottom:0 !important;
+    padding-bottom: 0 !important;
+  }
+}
+
+/* Mobile landscape: desktop-like framing + taller strip (matches lg hero feel) */
+@media (max-width: 900px) and (orientation: landscape) {
+  .hero-unified-bg {
+    background-position: center 48%;
+  }
+
+  .hero-mobile-landscape-frame {
+    min-height: min(208svh, 1280px) !important;
+  }
+
+  .hero-mobile-landscape-carousel-wrap {
+    min-height: min(220px, 40vh) !important;
+    max-height: none !important;
+  }
+}
+
+/* Hero reviews sidebar: thin scrollbar using theme primary / accent */
+.hero-reviews-sidebar-scroll {
+  scroll-behavior: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 123, 255, 0.35) transparent;
+}
+.hero-reviews-sidebar-scroll::-webkit-scrollbar {
+  width: 5px;
+}
+.hero-reviews-sidebar-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.hero-reviews-sidebar-scroll::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(0, 123, 255, 0.45), rgba(108, 92, 231, 0.4));
+  border-radius: 9999px;
+}
+.dark .hero-reviews-sidebar-scroll {
+  scrollbar-color: rgba(255, 107, 53, 0.45) transparent;
+}
+.dark .hero-reviews-sidebar-scroll::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(255, 107, 53, 0.55), rgba(108, 92, 231, 0.45));
+}
+
+/* Hero patient strip: must allow horizontal pan (global .scrollbar-hide is pan-y-only). */
+.hero-patient-scroll {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  touch-action: pan-x pan-y !important;
+  -webkit-overflow-scrolling: touch;
+}
+.hero-patient-scroll::-webkit-scrollbar {
+  display: none;
+}
+.hero-patient-scroll .center-card,
+.hero-patient-scroll .center-card:hover {
+  touch-action: pan-x pan-y !important;
+}
+
+/* Reviews row: same as hero — .scrollbar-hide blocks horizontal pan on touch */
+.reviews-scroll {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  touch-action: pan-x pan-y !important;
+  -webkit-overflow-scrolling: touch;
+}
+.reviews-scroll::-webkit-scrollbar {
+  display: none;
+}
+.reviews-scroll .crypto-card,
+.reviews-scroll .crypto-card:hover {
+  touch-action: pan-x pan-y !important;
+}
+
 /* Center Card Hover Effect */
 .center-card {
   position: relative;
@@ -731,7 +843,7 @@ video {
   right: 0;
   bottom: 0;
   border: 2px solid transparent;
-  border-radius: 24px;
+  border-radius: 1rem;
   transition: all 0.3s ease;
   pointer-events: none;
   z-index: -1;
@@ -915,4 +1027,75 @@ video {
 }
 .dark .hero-glass-degree {
   color: #22d3ee;
+}
+
+/* Hero about card — background must use .dark (theme toggle), not Tailwind `dark:` utilities */
+.hero-about-glass {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.08),
+    0 4px 6px -2px rgba(0, 0, 0, 0.04);
+}
+.dark .hero-about-glass {
+  /* Frosted glass: let the hero show through + blur; tint stays readable for white text */
+  background:
+    linear-gradient(
+      155deg,
+      rgba(255, 255, 255, 0.14) 0%,
+      rgba(255, 255, 255, 0.04) 42%,
+      transparent 62%
+    ),
+    linear-gradient(
+      145deg,
+      rgba(26, 26, 46, 0.42) 0%,
+      rgba(10, 10, 15, 0.52) 100%
+    );
+  backdrop-filter: blur(20px) saturate(1.25);
+  -webkit-backdrop-filter: blur(20px) saturate(1.25);
+  border-color: rgba(255, 255, 255, 0.22);
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+
+@keyframes hero-mobile-pin-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  20% {
+    transform: translateY(-3px);
+  }
+  40% {
+    transform: translateY(0);
+  }
+  60% {
+    transform: translateY(-1px);
+  }
+}
+
+.hero-mobile-pin-bounce {
+  animation: hero-mobile-pin-bounce 1.15s ease-in-out infinite;
+}
+
+@keyframes mobile-scroll-neon-fade {
+  0% {
+    box-shadow: 0 0 0 rgba(0, 123, 255, 0);
+    filter: brightness(1);
+  }
+  35% {
+    box-shadow: 0 0 16px rgba(0, 123, 255, 0.9), 0 0 28px rgba(0, 255, 255, 0.5);
+    filter: brightness(1.15);
+  }
+  100% {
+    box-shadow: 0 0 0 rgba(0, 123, 255, 0);
+    filter: brightness(1);
+  }
+}
+
+.mobile-scroll-neon-tap {
+  animation: mobile-scroll-neon-fade 550ms ease-out;
 }

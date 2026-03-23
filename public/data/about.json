@@ -4,9 +4,14 @@
   "title": "Senior Physiotherapist",
   "bio": "Experienced Physiotherapist with Master's Degree in Public Health from University of Sheffield, UK.",
   "profileImage": "/media/profile/physiotherapist.jpg",
+  "clinicAddress": {
+    "name": "Near Sheffield Station",
+    "area": "Sheffield",
+    "landmark": "UK"
+  },
   "profileLinks": {
-    "linkedin": "https://linkedin.com/in/priyachelli",
-    "instagram": "https://instagram.com/drpriyachelli",
-    "email": "priya.chelli@email.com"
+    "linkedin": "https://www.linkedin.com/in/kalyani-sadanala",
+    "instagram": "https://www.instagram.com/kalyanisreenivas/?hl=en",
+    "email": "kalyanisadanala17@gmail.com"
   }
 }

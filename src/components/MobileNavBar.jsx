@@ -13,6 +13,7 @@ const navItems = [
 const MobileNavBar = () => {
   const [activeItem, setActiveItem] = useState("#home");
   const [showHeroControls, setShowHeroControls] = useState(false);
+  const [activeScrollPulse, setActiveScrollPulse] = useState("");
 
   useEffect(() => {
     const heroSection = document.querySelector("#home");
@@ -39,6 +40,14 @@ const MobileNavBar = () => {
     if (typeof scrollFn === "function") {
       scrollFn();
     }
+  };
+
+  const handleHeroScrollTap = (direction) => {
+    triggerHeroScroll(direction);
+    setActiveScrollPulse(direction);
+    window.setTimeout(() => {
+      setActiveScrollPulse((prev) => (prev === direction ? "" : prev));
+    }, 550);
   };
 
   return (
@@ -77,16 +86,20 @@ const MobileNavBar = () => {
       <div className="absolute -top-12 left-1/2 flex -translate-x-1/2 items-center gap-1">
         <ThemeSwitcher />
         {showHeroControls && (
-          <div className="ml-2 flex items-center gap-1 rounded-full bg-background/80 px-2 py-1 text-[10px] font-semibold shadow-md dark:bg-background/60">
+          <div className="ml-2 flex items-center gap-1 rounded-xl bg-white/88 px-2 py-1 text-[10px] font-semibold text-primary shadow-[0_10px_30px_rgba(0,0,0,0.18)] backdrop-blur-xl ring-1 ring-inset ring-white/65 dark:bg-slate-900/78 dark:text-cyan-200 dark:shadow-[0_12px_34px_rgba(0,0,0,0.45)] dark:ring-cyan-200/20">
             <button
-              onClick={() => triggerHeroScroll("left")}
-              className="rounded-full bg-primary/10 px-2 py-0.5 text-primary"
+              onClick={() => handleHeroScrollTap("left")}
+              className={`rounded-md bg-primary/22 px-2 py-0.5 text-primary transition-colors hover:bg-primary/30 dark:bg-cyan-300/20 dark:text-cyan-100 dark:hover:bg-cyan-300/30 ${
+                activeScrollPulse === "left" ? "mobile-scroll-neon-tap" : ""
+              }`}
             >
               Scroll Left
             </button>
             <button
-              onClick={() => triggerHeroScroll("right")}
-              className="rounded-full bg-primary/10 px-2 py-0.5 text-primary"
+              onClick={() => handleHeroScrollTap("right")}
+              className={`rounded-md bg-primary/22 px-2 py-0.5 text-primary transition-colors hover:bg-primary/30 dark:bg-cyan-300/20 dark:text-cyan-100 dark:hover:bg-cyan-300/30 ${
+                activeScrollPulse === "right" ? "mobile-scroll-neon-tap" : ""
+              }`}
             >
               Scroll Right
             </button>
