@@ -1032,13 +1032,14 @@ video {
 /* Hero about card — background must use .dark (theme toggle), not Tailwind `dark:` utilities */
 .hero-about-glass {
   background: rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(14px) saturate(1.08) !important;
-  -webkit-backdrop-filter: blur(14px) saturate(1.08) !important;
-  will-change: backdrop-filter;
+
   transform: translateZ(0);
   box-shadow:
     0 10px 15px -3px rgba(0, 0, 0, 0.08),
     0 4px 6px -2px rgba(0, 0, 0, 0.04);
+  -webkit-backdrop-filter: blur(14px) saturate(1.08) !important;
+  backdrop-filter: blur(14px) saturate(1.08) !important;
+
 }
 .dark .hero-about-glass {
   /* Frosted glass: let the hero show through + blur; tint stays readable for white text */
