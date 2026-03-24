@@ -52,7 +52,7 @@ const MobileNavBar = () => {
 
   return (
     <nav className="mobile-nav fixed bottom-3 left-1/2 -translate-x-1/2 w-[95%] max-w-sm z-40 md:hidden">
-      <div className="mobile-nav-pill solid-glass-pill flex justify-around items-center py-2 neon-glow">
+      <div className="mobile-nav-pill hero-mobile-menu-glass flex justify-around items-center py-2 neon-glow">
         {navItems.map((item) => (
           <a
             key={item.href}
@@ -86,7 +86,7 @@ const MobileNavBar = () => {
       <div className="absolute -top-12 left-1/2 flex -translate-x-1/2 items-center gap-1">
         <ThemeSwitcher />
         {showHeroControls && (
-          <div className="ml-2 flex items-center gap-1 rounded-xl bg-white/88 px-2 py-1 text-[10px] font-semibold text-primary shadow-[0_10px_30px_rgba(0,0,0,0.18)] backdrop-blur-xl ring-1 ring-inset ring-white/65 dark:bg-slate-900/78 dark:text-cyan-200 dark:shadow-[0_12px_34px_rgba(0,0,0,0.45)] dark:ring-cyan-200/20">
+          <div className="hero-mobile-controls-glass ml-2 flex items-center gap-1 rounded-xl px-2 py-1 text-[10px] font-semibold text-primary dark:text-cyan-200">
             <button
               onClick={() => handleHeroScrollTap("left")}
               className={`rounded-md bg-primary/22 px-2 py-0.5 text-primary transition-colors hover:bg-primary/30 dark:bg-cyan-300/20 dark:text-cyan-100 dark:hover:bg-cyan-300/30 ${

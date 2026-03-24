@@ -1032,8 +1032,10 @@ video {
 /* Hero about card — background must use .dark (theme toggle), not Tailwind `dark:` utilities */
 .hero-about-glass {
   background: rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px) saturate(1.08) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(1.08) !important;
+  will-change: backdrop-filter;
+  transform: translateZ(0);
   box-shadow:
     0 10px 15px -3px rgba(0, 0, 0, 0.08),
     0 4px 6px -2px rgba(0, 0, 0, 0.04);
@@ -1098,4 +1100,41 @@ video {
 
 .mobile-scroll-neon-tap {
   animation: mobile-scroll-neon-fade 550ms ease-out;
+}
+
+/* Dedicated glass for mobile hero scroll controls; avoids utility/minifier differences across environments */
+.hero-mobile-controls-glass {
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.18),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.65);
+  -webkit-backdrop-filter: blur(18px) saturate(1.15) !important;
+  backdrop-filter: blur(18px) saturate(1.15) !important;
+}
+
+.dark .hero-mobile-controls-glass {
+  background: rgba(15, 23, 42, 0.78);
+  border-color: rgba(103, 232, 249, 0.25);
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.45);
+}
+
+/* Main mobile menu pill: same thick glass style for consistent deploy rendering */
+.hero-mobile-menu-glass {
+  position: relative;
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow:
+    0 12px 34px rgba(0, 0, 0, 0.2),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.62);
+  -webkit-backdrop-filter: blur(18px) saturate(1.14) !important;
+  backdrop-filter: blur(18px) saturate(1.14) !important;
+}
+
+.dark .hero-mobile-menu-glass {
+  background: rgba(15, 23, 42, 0.8);
+  border-color: rgba(103, 232, 249, 0.25);
+  box-shadow:
+    0 12px 34px rgba(0, 0, 0, 0.48),
+    inset 0 0 0 1px rgba(103, 232, 249, 0.2);
 }
