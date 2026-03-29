@@ -1,99 +1,137 @@
 [
   {
     "id": 1,
-    "patientName": "Sarah Johnson",
-    "condition": "Lower Back Pain",
-    "treatment": "Physical Therapy & Core Strengthening",
-    "recoveryPeriod": "8-12 weeks",
+    "patientName": "Female/52",
+    "condition": " Lyme disease–associated immune-mediated neuropathy with areflexic quadriparesis and cranial nerve palsy causing severe weakness",
+    "treatment": "ROM exercises, progressive strengthening, balance and gait training ",
+    "recoveryPeriod": "able to ambulate with minimal walking support at discharge",
     "movementsDone": [
-      "Pelvic tilts",
-      "Bird dog",
-      "Dead bug",
-      "Bridges"
+
     ],
     "boxColor": "#3B82F6",
     "images": [
-
+      {
+        "id": 1,
+        "url": "/media/patients/F52/images/IMG-20230310-WA0014.jpg",
+        "description": ""
+      },
+      {
+        "id": 2,
+        "url": "/media/patients/F52/images/IMG_20230204_164712.jpg",
+        "description": "performing squats"
+      },
+      {
+        "id": 3,
+        "url": "/media/patients/F52/images/IMG_20230204_164714.jpg",
+        "description": ""
+      },
+      {
+        "id": 4,
+        "url": "/media/patients/F52/images/IMG_20230310_162051.jpg",
+        "description": ""
+      }
     ],
     "videos": [
       {
         "id": 1,
-        "url": "public/media/patients/sarah_johnson/videos/VID_20230209_170236.mp4",
-        "description": "Dead bug exercise demonstration with breathing technique"
+        "url": "/media/patients/F52/videos/WhatsApp%20Video%202026-03-29%20at%2019.58.02.mp4",
+        "description": ""
       },
       {
         "id": 2,
-        "url": "public/media/patients/sarah_johnson/videos/VID_20230209_170457.mp4",
-        "description": "Bridge exercise progression from basic to advanced"
+        "url": "/media/patients/F52/videos/WhatsApp%20Video%202026-03-29%20at%2020.00.20.mp4",
+        "description": ""
+      },
+      {
+        "id": 3,
+        "url": "/media/patients/F52/videos/WhatsApp%20Video%202026-03-29%20at%2020.01.06.mp4",
+        "description": ""
+      },
+      {
+        "id": 4,
+        "url": "/media/patients/F52/videos/WhatsApp%20Video%202026-03-29%20at%2020.06.38.mp4",
+        "description": ""
+      },
+      {
+        "id": 5,
+        "url": "/media/patients/F52/videos/WhatsApp%20Video%202026-03-29%20at%2020.07.36.mp4",
+        "description": ""
+      },
+      {
+        "id": 6,
+        "url": "/media/patients/F52/videos/WhatsApp%20Video%202026-03-29%20at%2020.16.45.mp4",
+        "description": ""
+      },
+      {
+        "id": 7,
+        "url": "/media/patients/F52/videos/WhatsApp%20Video%202026-03-29%20at%2020.17.06.mp4",
+        "description": ""
+      },
+      {
+        "id": 8,
+        "url": "/media/patients/F52/videos/WhatsApp%20Video%202026-03-29%20at%2020.27.54.mp4",
+        "description": ""
       }
     ]
   },
   {
     "id": 2,
-    "patientName": "69/Female",
-    "condition": "Post right FTP decompression craniectomy with hematoma causing weakness and impaired mobility",
-    "treatment": "strengthening, balance training and gait rehabilitation",
-    "recoveryPeriod": "12-16 weeks/Able to walk with stick support at discharge",
+    "patientName": "Male/65",
+    "condition": "Bilateral total knee replacement with post-surgical stiffness and loss of mobility leading to inability to walk ",
+    "treatment": "ROM exercises, joint mobilization, strengthening, gait and functional training.",
+    "recoveryPeriod": "progressed from non-ambulatory to walking with tripod support at discharge",
     "movementsDone": [
-      "Quad sets",
-      "Straight leg raises",
-      "Mini squats",
-      "Step-ups"
+
     ],
     "boxColor": "#10B981",
     "images": [
-      {
-        "id": 1,
-        "url": "/media/patients/michael_chen/images/IMG_20230204_164712.jpg",
-        "description": "performing squats"
-      },
-      {
-        "id": 2,
-        "url": "/media/patients/michael_chen/images/IMG_20230204_164714.jpg",
-        "description": ""
-      },
-      {
-        "id": 3,
-        "url": "/media/patients/michael_chen/images/IMG_20230310_162051.jpg",
-        "description": ""
-      },
-      {
-        "id": 4,
-        "url": "/media/patients/michael_chen/images/IMG-20230310-WA0014.jpg",
-        "description": ""
-      }
     ],
     "videos": [
       {
         "id": 1,
-        "url": "public/media/patients/michael_chen/videos/no-coridantion.mp4",
-        "description": "Mini squat technique with proper knee alignment"
+        "url": "/media/patients/M65/videos/WhatsApp%20Video%202026-03-29%20at%2021.26.13.mp4",
+        "description": ""
       },
       {
         "id": 2,
-        "url": "public/media/patients/michael_chen/videos/movemtents done.mp4",
-        "description": "Balance exercises on unstable surfaces"
+        "url": "/media/patients/M65/videos/WhatsApp%20Video%202026-03-29%20at%2021.26.34.mp4",
+        "description": ""
       },
       {
         "id": 3,
-        "url": "public/media/patients/michael_chen/videos/independent walking.mp4",
-        "description": "Mini squat technique with proper knee alignment"
+        "url": "/media/patients/M65/videos/WhatsApp%20Video%202026-03-29%20at%2021.26.38.mp4",
+        "description": ""
       },
       {
         "id": 4,
-        "url": "public/media/patients/michael_chen/videos/independent situps.mp4",
-        "description": "Balance exercises on unstable surfaces"
+        "url": "/media/patients/M65/videos/WhatsApp%20Video%202026-03-29%20at%2021.32.44.mp4",
+        "description": ""
       },
       {
         "id": 5,
-        "url": "public/media/patients/michael_chen/videos/cordination.mp4",
-        "description": "Balance exercises on unstable surfaces"
+        "url": "/media/patients/M65/videos/WhatsApp%20Video%202026-03-29%20at%2021.34.02.mp4",
+        "description": ""
+      },
+      {
+        "id": 6,
+        "url": "/media/patients/M65/videos/WhatsApp%20Video%202026-03-29%20at%2021.41.32.mp4",
+        "description": ""
+      },
+      {
+        "id": 7,
+        "url": "/media/patients/M65/videos/WhatsApp%20Video%202026-03-29%20at%2021.41.39.mp4",
+        "description": ""
+      },
+      {
+        "id": 8,
+        "url": "/media/patients/M65/videos/WhatsApp%20Video%202026-03-29%20at%2021.41.47.mp4",
+        "description": ""
       }
     ]
   },
   {
     "id": 3,
-    "patientName": "Emily Rodriguez",
+    "patientName": "Male/69",
     "condition": "Shoulder Impingement",
     "treatment": "Rotator Cuff Strengthening & Mobility",
     "recoveryPeriod": "6-10 weeks",
@@ -108,27 +146,31 @@
 
     ],
     "videos": [
-
-    ]
-  },
-  {
-    "id": 4,
-    "patientName": "David Thompson",
-    "condition": "Ankle Sprain Recovery",
-    "treatment": "Balance Training & Proprioception",
-    "recoveryPeriod": "4-8 weeks",
-    "movementsDone": [
-      "Single leg balance",
-      "Heel-to-toe walk",
-      "Calf raises",
-      "Ankle circles"
-    ],
-    "boxColor": "#EF4444",
-    "images": [
-
-    ],
-    "videos": [
-
+      {
+        "id": 1,
+        "url": "/media/patients/M69/videos/no-coridantion.mp4",
+        "description": ""
+      },
+      {
+        "id": 2,
+        "url": "/media/patients/M69/videos/movemtents%20done.mp4",
+        "description": ""
+      },
+      {
+        "id": 3,
+        "url": "/media/patients/M69/videos/independent%20walking.mp4",
+        "description": ""
+      },
+      {
+        "id": 4,
+        "url": "/media/patients/M69/videos/independent%20situps.mp4",
+        "description": ""
+      },
+      {
+        "id": 5,
+        "url": "/media/patients/M69/videos/cordination.mp4",
+        "description": ""
+      }
     ]
   }
 
