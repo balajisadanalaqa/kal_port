@@ -2,6 +2,46 @@ import React, { useState, useEffect, useMemo, useCallback, useRef } from "react"
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useSwipeHorizontal } from "../hooks/useSwipeHorizontal";
 
+/** Grid tile: load metadata, seek slightly past 0, pause — reliable poster frame without playing audio */
+const VideoGridThumbnail = ({ src, className }) => {
+  const videoRef = useRef(null);
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return undefined;
+    let cancelled = false;
+    const onMeta = () => {
+      if (cancelled) return;
+      try {
+        const t = Number.isFinite(v.duration) && v.duration > 0 ? Math.min(0.08, v.duration * 0.02) : 0.08;
+        v.currentTime = t;
+      } catch {
+        /* ignore */
+      }
+    };
+    const onSeeked = () => {
+      if (!cancelled) v.pause();
+    };
+    v.addEventListener("loadedmetadata", onMeta);
+    v.addEventListener("seeked", onSeeked);
+    return () => {
+      cancelled = true;
+      v.removeEventListener("loadedmetadata", onMeta);
+      v.removeEventListener("seeked", onSeeked);
+    };
+  }, [src]);
+  return (
+    <video
+      ref={videoRef}
+      src={src}
+      muted
+      playsInline
+      preload="metadata"
+      className={className}
+      aria-hidden
+    />
+  );
+};
+
 const PatientDetailsModal = ({ patient, onClose, onNextPatient, onPrevPatient }) => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -10,7 +50,6 @@ const PatientDetailsModal = ({ patient, onClose, onNextPatient, onPrevPatient })
   const [lightboxMounted, setLightboxMounted] = useState(false);
   const [videoReady, setVideoReady] = useState(false);
   const lightboxCloseRef = useRef(null);
-  const lightboxVideoRef = useRef(null);
   const headerSwipeRef = useRef(null);
   const lightboxMediaSwipeRef = useRef(null);
 
@@ -36,8 +75,6 @@ const PatientDetailsModal = ({ patient, onClose, onNextPatient, onPrevPatient })
     () => [...(patient.images || []), ...(patient.videos || [])],
     [patient.images, patient.videos]
   );
-  const patientVideoUrls = (patient.videos || []).map((v) => v?.url).filter(Boolean);
-
   // Hydrate lightbox from ?media= and keep in sync when URL changes
   useEffect(() => {
     const m = searchParams.get("media");
@@ -115,7 +152,7 @@ const PatientDetailsModal = ({ patient, onClose, onNextPatient, onPrevPatient })
 
   const isVideo = (url) => typeof url === "string" && url.includes(".mp4");
 
-  // When lightbox opens: trigger enter transition and focus close button; for video, force load+play to avoid stuck playback
+  // Lightbox enter animation + focus; video readiness comes from element events (no manual load()/play() race)
   useEffect(() => {
     if (!selectedMedia) {
       setLightboxMounted(false);
@@ -124,13 +161,7 @@ const PatientDetailsModal = ({ patient, onClose, onNextPatient, onPrevPatient })
     }
     const isVid = typeof selectedMedia?.url === "string" && selectedMedia.url.includes(".mp4");
     setVideoReady(!isVid);
-    const id = requestAnimationFrame(() => {
-      setLightboxMounted(true);
-      if (isVid && lightboxVideoRef.current) {
-        lightboxVideoRef.current.load();
-        lightboxVideoRef.current.play().catch(() => {});
-      }
-    });
+    const id = requestAnimationFrame(() => setLightboxMounted(true));
     lightboxCloseRef.current?.focus();
     return () => cancelAnimationFrame(id);
   }, [selectedMedia]);
@@ -178,14 +209,6 @@ const PatientDetailsModal = ({ patient, onClose, onNextPatient, onPrevPatient })
     <>
       {/* Main Modal - Gallery first layout */}
       <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
-        {/* Preload this patient's videos only when lightbox is closed (avoids multiple elements with same src fighting and stuck playback) */}
-        {patientVideoUrls.length > 0 && !selectedMedia && (
-          <div className="absolute w-0 h-0 overflow-hidden opacity-0 pointer-events-none" aria-hidden>
-            {patientVideoUrls.map((url) => (
-              <video key={url} src={url} preload="auto" muted playsInline />
-            ))}
-          </div>
-        )}
         <div
           className="absolute inset-0 bg-black/80 backdrop-blur-sm"
           onClick={onClose}
@@ -282,15 +305,17 @@ const PatientDetailsModal = ({ patient, onClose, onNextPatient, onPrevPatient })
                       >
                         {isVid ? (
                           <>
-                            {/* Video: static first frame only (no play in grid) */}
-                            <video
-                              src={media.url}
-                              preload="metadata"
-                              muted
-                              playsInline
-                              className="absolute inset-0 w-full h-full object-cover pointer-events-none"
-                              onError={() => {}}
-                            />
+                            {selectedMedia ? (
+                              <div
+                                className="absolute inset-0 bg-black/45 pointer-events-none"
+                                aria-hidden
+                              />
+                            ) : (
+                              <VideoGridThumbnail
+                                src={media.url}
+                                className="absolute inset-0 w-full h-full object-cover pointer-events-none bg-black/40"
+                              />
+                            )}
                             <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors">
                               <span className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-white/90 flex items-center justify-center shadow-lg">
                                 <svg className="w-6 h-6 sm:w-7 sm:h-7 text-primary ml-0.5" fill="currentColor" viewBox="0 0 20 20">
@@ -367,25 +392,31 @@ const PatientDetailsModal = ({ patient, onClose, onNextPatient, onPrevPatient })
               ref={lightboxMediaSwipeRef}
               className="relative flex-1 min-h-0 flex items-center justify-center p-4 bg-black/20 min-w-0 touch-pan-y"
             >
-              <div className="relative max-w-[90vw] max-h-[75vh] w-fit h-fit flex items-center justify-center rounded-xl overflow-hidden bg-black/40">
+              <div className="relative flex h-fit w-fit max-h-[min(75vh,100dvh)] max-w-[90vw] items-center justify-center overflow-hidden rounded-xl bg-black/40 transform-gpu">
                 {isVideo(selectedMedia.url) ? (
                   <>
-                    {!videoReady && (
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-10">
-                        <div className="w-10 h-10 border-2 border-white/30 border-t-white rounded-full animate-spin" aria-hidden />
-                      </div>
-                    )}
+                    <div
+                      className={`absolute inset-0 z-10 flex items-center justify-center bg-black/40 transition-opacity duration-200 ${
+                        videoReady ? "opacity-0 pointer-events-none" : "opacity-100"
+                      }`}
+                      aria-hidden
+                    >
+                      <div className="w-10 h-10 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    </div>
                     <video
-                      ref={lightboxVideoRef}
                       key={selectedMedia.url}
                       src={selectedMedia.url}
-                      className="w-full h-full max-w-[90vw] max-h-[75vh] object-contain"
+                      className={`relative z-0 max-h-[min(75vh,100dvh)] w-auto max-w-[90vw] min-h-[120px] object-contain ${
+                        videoReady ? "opacity-100" : "opacity-0"
+                      }`}
                       controls
                       autoPlay
                       muted
                       playsInline
                       preload="auto"
+                      onLoadedData={() => setVideoReady(true)}
                       onCanPlay={() => setVideoReady(true)}
+                      onPlaying={() => setVideoReady(true)}
                       onError={() => setVideoReady(true)}
                     />
                   </>

@@ -76,18 +76,24 @@ const PatientCaseCarousel = ({ patient, onViewDetails, isCenterCard = false, com
               }}
             >
               {media.url.includes('.mp4') ? (
-                <video
-                  src={media.url}
-                  className="w-full h-full object-cover"
-                  muted
-                  loop
-                  autoPlay
-                  onError={(e) => {
-                    console.error('Video failed to load:', media.url);
-                  }}
-                  onMouseEnter={(e) => e.target.play()}
-                  onMouseLeave={(e) => e.target.pause()}
-                />
+                index === currentIndex ? (
+                  <video
+                    src={media.url}
+                    className="w-full h-full object-cover"
+                    muted
+                    loop
+                    autoPlay
+                    playsInline
+                    preload="auto"
+                    onError={(e) => {
+                      console.error('Video failed to load:', media.url);
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.play()?.catch(() => {})}
+                    onMouseLeave={(e) => e.currentTarget.pause()}
+                  />
+                ) : (
+                  <div className="h-full w-full bg-black/35" aria-hidden />
+                )
               ) : (
                 <img
                   src={media.url}
